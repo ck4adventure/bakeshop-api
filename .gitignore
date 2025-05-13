@@ -42,6 +42,13 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# Ignore all env files
+*.env
+.env.*
+
+# But keep example env files in version control
+!.env.example
+
 # temp directory
 .temp
 .tmp
