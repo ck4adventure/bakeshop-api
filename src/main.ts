@@ -5,7 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-	// swagger setup
+  // swagger setup
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
@@ -17,4 +17,7 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('Bootstrap failed:', err);
+});
