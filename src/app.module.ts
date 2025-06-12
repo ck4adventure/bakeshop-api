@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { logger } from './common/middleware/logging.middleware';
+import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
@@ -16,7 +18,10 @@ import { UsersModule } from './users/users.module';
           limit: 10,
         },
       ],
-    }), AuthModule, UsersModule,],
+    }), 
+		AuthModule, 
+		UsersModule,
+	],
   controllers: [AppController],
   providers: [AppService,
 		 {
@@ -25,4 +30,10 @@ import { UsersModule } from './users/users.module';
     },
 	],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(logger)
+      .forRoutes(AuthController);
+  }
+}
