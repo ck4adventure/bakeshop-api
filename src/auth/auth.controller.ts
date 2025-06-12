@@ -8,6 +8,7 @@ import { Public } from './metadata';
 export class AuthController {
 	constructor(private authService: AuthService) { }
 
+	@Public()
 	@HttpCode(HttpStatus.OK)
 	@Post('login')
 	signIn(@Body() body: { username: string; password: string }) {
