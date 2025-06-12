@@ -8,12 +8,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 // but we set it explicity
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-	
-	app.use(helmet());
-	// TODO set CORS to only trusted origins in prod
-	app.enableCors();
 
-	// TODO swagger api only avail locally
+  app.use(helmet());
+  // TODO set CORS to only trusted origins in prod
+  app.enableCors();
+
+  // TODO swagger api only avail locally
   // swagger setup
   const config = new DocumentBuilder()
     .setTitle('Cats example')
@@ -24,9 +24,9 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-	// TODO global validation pipe to sanitize and validate incoming requests
+  // TODO global validation pipe to sanitize and validate incoming requests
 
-	// for express platform http adapter
+  // for express platform http adapter
   app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
 
   await app.listen(process.env.PORT ?? 3000);

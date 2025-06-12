@@ -10,30 +10,29 @@ import { AuthController } from './auth/auth.controller';
 
 @Module({
   imports: [
-		ConfigModule.forRoot(), 
-		ThrottlerModule.forRoot({
+    ConfigModule.forRoot(),
+    ThrottlerModule.forRoot({
       throttlers: [
         {
           ttl: 60,
           limit: 10,
         },
       ],
-    }), 
-		AuthModule, 
-		UsersModule,
-	],
+    }),
+    AuthModule,
+    UsersModule,
+  ],
   controllers: [AppController],
-  providers: [AppService,
-		 {
+  providers: [
+    AppService,
+    {
       provide: 'APP_GUARD',
       useClass: ThrottlerGuard,
     },
-	],
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(logger)
-      .forRoutes(AuthController);
+    consumer.apply(logger).forRoutes(AuthController);
   }
 }

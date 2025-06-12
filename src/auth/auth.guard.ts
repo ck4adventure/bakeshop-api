@@ -1,4 +1,3 @@
-
 import {
   CanActivate,
   ExecutionContext,
@@ -13,9 +12,10 @@ import { IS_PUBLIC_KEY } from './metadata';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-		private jwtService: JwtService, 
-		private reflector: Reflector, 
-		private configService: ConfigService) {}
+    private jwtService: JwtService,
+    private reflector: Reflector,
+    private configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -33,9 +33,9 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     try {
-			const jwtSecret = this.configService.get<string>('JWT_TOKEN'); // Get secret from env
+      const jwtSecret = this.configService.get<string>('JWT_TOKEN'); // Get secret from env
       const payload = await this.jwtService.verifyAsync(token, {
-        secret:  jwtSecret,
+        secret: jwtSecret,
       });
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
