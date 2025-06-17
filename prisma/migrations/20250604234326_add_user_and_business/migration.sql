@@ -34,3 +34,8 @@ ALTER TABLE "User" ADD CONSTRAINT "User_businessId_fkey" FOREIGN KEY ("businessI
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_invitedById_fkey" FOREIGN KEY ("invitedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Add Partual Unique Constraint
+CREATE UNIQUE INDEX one_owner_per_business
+ON "Membership" ("businessId")
+WHERE role = 'OWNER';
