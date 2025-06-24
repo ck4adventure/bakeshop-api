@@ -1,9 +1,17 @@
+# Bakery App API
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Current Status
 Initial boilerplate project.
+
+## Backend Stack
+- Nestjs
+- Jest for testing
+- Prisma ORM to talk to the db
+- Postgresql, currently only supported locally
+- JWT sessions, global authguard
 
 
 ## Project setup
