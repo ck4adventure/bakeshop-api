@@ -13,31 +13,31 @@ model User {
   id           String    @id @default(uuid())
   email        String    @unique
   name         String
-  role         Role      @default(STAFF)
-  businessId   String
-  business     Business  @relation(fields: [businessId], references: [id])
+  // role         Role      @default(STAFF)
+  // businessId   String
+  // business     Business  @relation(fields: [businessId], references: [id])
 
-  invitedById  String?   // Optional reference to inviter
-  invitedBy    User?     @relation("UserInvites", fields: [invitedById], references: [id])
-  invites      User[]    @relation("UserInvites") // Users this user has invited
+  // invitedById  String?   // Optional reference to inviter
+  // invitedBy    User?     @relation("UserInvites", fields: [invitedById], references: [id])
+  // invites      User[]    @relation("UserInvites") // Users this user has invited
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   isActive     Boolean   @default(true)
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  STAFF
-}
+// enum Role {
+//   ADMIN
+//   MANAGER
+//   STAFF
+// }
 
 // =============== Business ===============
-model Business {
-  id          String    @id @default(uuid())
-  name        String
-  users       User[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
+// model Business {
+//   id          String    @id @default(uuid())
+//   name        String
+//   users       User[]
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+// }
 
