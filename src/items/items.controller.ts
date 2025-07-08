@@ -3,6 +3,7 @@ import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
+import { Public } from 'src/auth/metadata';
 
 @Controller('items')
 export class ItemsController {
@@ -17,6 +18,7 @@ export class ItemsController {
    * Retrieves all items.
    * @returns An array of all items.
    */
+	@Public()
   @Get()
   findAll(): Promise<Item[]> {
     return this.itemsService.findAll();
