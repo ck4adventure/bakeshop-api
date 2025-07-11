@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,9 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-// ========== (inventory) ITEM =========
 model item {
-	id	 String @id @default(uuid())
-	name String @unique
+  id   String @id @default(uuid())
+  name String @unique
 }
