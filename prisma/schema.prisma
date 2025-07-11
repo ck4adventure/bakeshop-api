@@ -9,3 +9,8 @@ datasource db {
 }
 
 
+// ========== (inventory) ITEM =========
+model item {
+	id	 String @id @default(uuid())
+	name String @unique
+}
