@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { logger } from './common/middleware/logging.middleware';
 import { AuthController } from './auth/auth.controller';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthController } from './auth/auth.controller';
     }),
     AuthModule,
     UsersModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [

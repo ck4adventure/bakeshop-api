@@ -8,6 +8,7 @@ Initial boilerplate project.
 ## Feature Workflow
 1. Add changes to Prisma schema
 2. All in one migration and application `npx prisma migrate dev`
+3. Boilerplate CRUD for a resource with `nest g resource [name]`
 
 
 ## Project setup
