@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './metadata';
@@ -23,17 +24,22 @@ export class AuthController {
     @Body() body: { username: string; password: string },
     @Res({ passthrough: true }) res: Response,
   ) {
-    // TODO add a handler for undefined body
+    if (!body || !body.username || !body.password) {
+      throw new BadRequestException('Username and password are required');
+    }
+
     const { access_token } = await this.authService.signIn(
       body.username,
       body.password,
     );
+
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 3600000, // 1 hour, optional
+      maxAge: 3600000, // 1 hour
     });
+
     return { status: 'ok' };
   }
 
@@ -48,10 +54,9 @@ export class AuthController {
     return { status: 'signed out' };
   }
 
-  // @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@Req() req: any) {
-    return req.user;
+  getProfile(@Req() req: Request & { user?: any }) {
+    return req.user || { message: 'No user on request' };
   }
 
   @Public()

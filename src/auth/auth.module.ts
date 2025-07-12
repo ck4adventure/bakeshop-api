@@ -13,7 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.get<string>('JWT_ACCESS_SECRET'),
         signOptions: { expiresIn: '60m' },
       }),
     }),
