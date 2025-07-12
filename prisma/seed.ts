@@ -28,7 +28,7 @@ const items_demo_data = [
 // in parallel (smaller datasets only)
 async function main() {
   for (const item of items_demo_data) {
-    const result = await prisma.item.create({
+    const result = await prisma.items.create({
       data: item
     })
 		console.log(result)

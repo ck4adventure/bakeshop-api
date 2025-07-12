@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ItemController } from './item.controller';
-import { ItemService } from './item.service';
+import { ItemsController } from './items.controller';
+import { ItemsService } from './items.service';
 
 describe('ItemController', () => {
-	let controller: ItemController;
-	let service: ItemService;
+	let controller: ItemsController;
+	let service: ItemsService;
 
 	beforeEach(async () => {
 		const mockItemService = {
@@ -12,14 +12,14 @@ describe('ItemController', () => {
 		};
 
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [ItemController],
+			controllers: [ItemsController],
 			providers: [
-				{ provide: ItemService, useValue: mockItemService },
+				{ provide: ItemsService, useValue: mockItemService },
 			],
 		}).compile();
 
-		controller = module.get<ItemController>(ItemController);
-		service = module.get<ItemService>(ItemService);
+		controller = module.get<ItemsController>(ItemsController);
+		service = module.get<ItemsService>(ItemsService);
 	});
 
 	it('should be defined', () => {

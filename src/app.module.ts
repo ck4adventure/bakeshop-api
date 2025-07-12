@@ -7,7 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { logger } from './common/middleware/logging.middleware';
 import { AuthController } from './auth/auth.controller';
-import { ItemModule } from './item/item.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { ItemsModule } from './items/items.module';
 
 @Module({
   imports: [
@@ -20,9 +21,10 @@ import { ItemModule } from './item/item.module';
         },
       ],
     }),
+		PrismaModule,
     AuthModule,
     UsersModule,
-    ItemModule,
+    ItemsModule,
   ],
   controllers: [AppController],
   providers: [

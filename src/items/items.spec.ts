@@ -2,16 +2,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-describe('Item Model', () => {
+describe('Items Model', () => {
   let itemId: string;
 
   afterAll(async () => {
-    await prisma.item.deleteMany();
+    await prisma.items.deleteMany();
     await prisma.$disconnect();
   });
 
   it('creates an item', async () => {
-    const item = await prisma.item.create({
+    const item = await prisma.items.create({
       data: { name: 'Test Item' },
     });
     itemId = item.id;
@@ -19,13 +19,13 @@ describe('Item Model', () => {
   });
 
   it('reads an item', async () => {
-    const item = await prisma.item.findUnique({ where: { id: itemId } });
+    const item = await prisma.items.findUnique({ where: { id: itemId } });
     expect(item).not.toBeNull();
     expect(item?.id).toBe(itemId);
   });
 
   it('updates an item', async () => {
-    const updated = await prisma.item.update({
+    const updated = await prisma.items.update({
       where: { id: itemId },
       data: { name: 'Updated' },
     });
@@ -33,14 +33,14 @@ describe('Item Model', () => {
   });
 
   it('deletes an item', async () => {
-    await prisma.item.delete({ where: { id: itemId } });
-    const item = await prisma.item.findUnique({ where: { id: itemId } });
+    await prisma.items.delete({ where: { id: itemId } });
+    const item = await prisma.items.findUnique({ where: { id: itemId } });
     expect(item).toBeNull();
   });
 
   it('fails to create item without name', async () => {
     await expect(
-      prisma.item.create({ data: {} as any })
+      prisma.items.create({ data: {} as any })
     ).rejects.toThrow();
   });
 });
