@@ -5,12 +5,19 @@
 ## Current Status
 Initial boilerplate project.
 
+## Feature Workflow
+1. Add changes to Prisma schema
+2. All in one migration and application `npx prisma migrate dev`
+3. Boilerplate CRUD for a resource with `nest g resource [name]`
+
 
 ## Project setup
 
 ```bash
 $ npm install
 ```
+
+Then create a `.env` file and ensure `DATABASE_URL` is set. See examples for format. Localhost port is 5432.
 
 ## Compile and run the project
 
@@ -28,13 +35,13 @@ $ npm run start:prod
 ## Run tests
 
 ```bash
-# unit tests
+# unit tests with jest
 $ npm run test
 
-# e2e tests
+# e2e tests with playwright
 $ npm run test:e2e
 
-# test coverage
+# jest test coverage
 $ npm run test:cov
 ```
 
