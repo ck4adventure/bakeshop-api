@@ -4,19 +4,17 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { Items } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-
-
 @Injectable()
 export class ItemsService {
-constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   create(createItemDto: CreateItemDto) {
     return 'This action adds a new item';
   }
 
-	findAll(): Promise<Items[]> {
-  return this.prisma.items.findMany();
-}
+  findAll(): Promise<Items[]> {
+    return this.prisma.items.findMany();
+  }
 
   findOne(id: number) {
     return `This action returns a #${id} item`;

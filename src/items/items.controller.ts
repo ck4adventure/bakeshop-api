@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
@@ -12,7 +20,7 @@ export class ItemsController {
   create(@Body() createItemDto: CreateItemDto) {
     return this.itemService.create(createItemDto);
   }
-	@Public()
+  @Public()
   @Get()
   findAll() {
     return this.itemService.findAll();

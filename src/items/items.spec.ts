@@ -39,8 +39,6 @@ describe('Items Model', () => {
   });
 
   it('fails to create item without name', async () => {
-    await expect(
-      prisma.items.create({ data: {} as any })
-    ).rejects.toThrow();
+    await expect(prisma.items.create({ data: {} as any })).rejects.toThrow();
   });
 });

@@ -21,7 +21,7 @@ import { ItemsModule } from './items/items.module';
         },
       ],
     }),
-		PrismaModule,
+    PrismaModule,
     AuthModule,
     UsersModule,
     ItemsModule,
