@@ -10,7 +10,7 @@ import {
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Public } from 'src/auth/metadata';
+import { Public } from '../auth/metadata';
 
 @Controller('items')
 export class ItemsController {
