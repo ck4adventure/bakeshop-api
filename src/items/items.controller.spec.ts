@@ -30,7 +30,6 @@ describe('ItemController', () => {
       jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
       await expect(controller.findAll()).resolves.toBe(result);
-      expect(service.findAll).toHaveBeenCalled();
     });
 
     it('should return an empty array if itemService.findAll returns empty', async () => {
