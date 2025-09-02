@@ -1,0 +1,46 @@
+PASS src/items/items.spec.ts (6.587 s)
+  Items Model (Mocked Prisma)
+    ✓ creates an item (7 ms)
+    ✓ reads an item (1 ms)
+    ✓ updates an item
+    ✓ deletes an item (1 ms)
+    ✓ fails to create item without name (16 ms)
+
+PASS src/app.controller.spec.ts (7.13 s)
+  AppController
+    root
+      ✓ should return "Hello World!" (30 ms)
+
+PASS src/items/items.service.spec.ts (7.24 s)
+  ItemsService
+    ✓ should be defined (22 ms)
+    findAll
+      ✓ should return empty array if no items found (5 ms)
+      ✓ should return items if found (4 ms)
+      ✓ should throw an error if prisma fails (16 ms)
+
+PASS src/items/items.controller.spec.ts (7.382 s)
+  ItemController
+    ✓ should be defined (23 ms)
+    findAll
+      ✓ should call itemService.findAll and return its result (3 ms)
+      ✓ should return an empty array if itemService.findAll returns empty (4 ms)
+      ✓ should propagate errors thrown by itemService.findAll (9 ms)
+
+PASS src/auth/auth.service.spec.ts (7.368 s)
+  AuthService
+    ✓ should be defined (24 ms)
+
+PASS src/users/users.service.spec.ts (7.224 s)
+  UsersService
+    ✓ should be defined (21 ms)
+
+PASS src/auth/auth.controller.spec.ts (7.355 s)
+  AuthController
+    ✓ should be defined (26 ms)
+
+Test Suites: 7 passed, 7 total
+Tests:       17 passed, 17 total
+Snapshots:   0 total
+Time:        8.944 s
+Ran all test suites.
