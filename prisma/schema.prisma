@@ -7,7 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Items {
-  id   String @id @default(uuid())
-  name String @unique
+// --------   Items   ----------
+model Item {
+  id           Int                    @id @default(autoincrement())
+  name         String
+  slug         String                 @unique
+  inventory    ItemInventory?
+  transactions InventoryTransaction[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model InventoryTransaction {
+  id        Int      @id @default(autoincrement())
+  product   Item     @relation(fields: [itemId], references: [id])
+  itemId    Int
+  quantity  Int // +10 = restock, -2 = sale
+  reason    String // evtl add an enum to restrict types
+  createdAt DateTime @default(now())
+}
+
+model ItemInventory {
+  item      Item     @relation(fields: [itemId], references: [id])
+  itemId    Int      @id
+  quantity  Int      @default(0)
+  updatedAt DateTime @updatedAt
 }

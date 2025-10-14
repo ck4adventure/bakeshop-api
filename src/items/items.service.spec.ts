@@ -18,7 +18,7 @@ describe('ItemsService', () => {
         {
           provide: PrismaService,
           useValue: {
-            items: {
+            item: {
               create: jest.fn(),
               findMany: jest.fn(),
               findUnique: jest.fn(),
@@ -40,24 +40,25 @@ describe('ItemsService', () => {
 
   describe('findAll', () => {
     it('should return an array of items', async () => {
-      const mockItems = [{ id: '1', name: 'Item 1' }];
-      jest.spyOn(prisma.items, 'findMany').mockResolvedValue(mockItems);
+      const now = new Date();
+      const mockItems = [{ id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now }];
+      jest.spyOn(prisma.item, 'findMany').mockResolvedValue(mockItems);
 
       const result = await service.findAll();
       expect(result).toEqual(mockItems);
-      expect(prisma.items.findMany).toHaveBeenCalled();
+      expect(prisma.item.findMany).toHaveBeenCalled();
     });
 
     it('should return empty array if no items found', async () => {
-      jest.spyOn(prisma.items, 'findMany').mockResolvedValue([]);
+  jest.spyOn(prisma.item, 'findMany').mockResolvedValue([]);
 
-      const result = await service.findAll();
-      expect(result).toEqual([]);
+  const result = await service.findAll();
+  expect(result).toEqual([]);
     });
 
     it('should throw an error if prisma fails', async () => {
       jest
-        .spyOn(prisma.items, 'findMany')
+        .spyOn(prisma.item, 'findMany')
         .mockRejectedValue(new Error('Database error'));
 
       await expect(service.findAll()).rejects.toThrow('Database error');
@@ -66,54 +67,57 @@ describe('ItemsService', () => {
 
   describe('findOne', () => {
     it('should return an item if found', async () => {
-      const mockItem = { id: '1', name: 'Item 1' };
-      jest.spyOn(prisma.items, 'findUnique').mockResolvedValue(mockItem);
+      const now = new Date();
+      const mockItem = { id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now };
+      jest.spyOn(prisma.item, 'findUnique').mockResolvedValue(mockItem);
 
       const result = await service.findOne('1');
       expect(result).toEqual(mockItem);
-      expect(prisma.items.findUnique).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prisma.item.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
       });
     });
 
     it('should throw NotFoundException if item not found', async () => {
-      jest.spyOn(prisma.items, 'findUnique').mockResolvedValue(null);
+  jest.spyOn(prisma.item, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
+  await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('create', () => {
     it('should create and return an item', async () => {
+      const now = new Date();
       const dto: CreateItemDto = { name: 'New Item' };
-      const mockItem = { id: '2', name: 'New Item' };
-      jest.spyOn(prisma.items, 'create').mockResolvedValue(mockItem);
+      const mockItem = { id: 2, name: 'New Item', slug: 'new-item', createdAt: now, updatedAt: now };
+      jest.spyOn(prisma.item, 'create').mockResolvedValue(mockItem);
 
       const result = await service.create(dto);
       expect(result).toEqual(mockItem);
-      expect(prisma.items.create).toHaveBeenCalledWith({
-        data: { name: dto.name },
+      expect(prisma.item.create).toHaveBeenCalledWith({
+        data: { name: dto.name, slug: 'new-item' },
       });
     });
   });
 
   describe('update', () => {
     it('should update and return the item', async () => {
+      const now = new Date();
       const dto: UpdateItemDto = { id: '1', name: 'Updated Item' };
-      const mockItem = { id: '1', name: 'Updated Item' };
-      jest.spyOn(prisma.items, 'update').mockResolvedValue(mockItem);
+      const mockItem = { id: 1, name: 'Updated Item', slug: 'updated-item', createdAt: now, updatedAt: now };
+      jest.spyOn(prisma.item, 'update').mockResolvedValue(mockItem);
 
       const result = await service.update('1', dto);
       expect(result).toEqual(mockItem);
-      expect(prisma.items.update).toHaveBeenCalledWith({
-        where: { id: '1' },
-        data: { name: dto.name },
+      expect(prisma.item.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { name: dto.name, slug: 'updated-item' },
       });
     });
 
     it('should throw NotFoundException if item not found', async () => {
       jest
-        .spyOn(prisma.items, 'update')
+        .spyOn(prisma.item, 'update')
         .mockRejectedValue(new Error('Record not found'));
 
       await expect(
@@ -124,19 +128,20 @@ describe('ItemsService', () => {
 
   describe('remove', () => {
     it('should delete and return the item', async () => {
-      const mockItem = { id: '1', name: 'Deleted Item' };
-      jest.spyOn(prisma.items, 'delete').mockResolvedValue(mockItem);
+      const now = new Date();
+      const mockItem = { id: 1, name: 'Deleted Item', slug: 'deleted-item', createdAt: now, updatedAt: now };
+      jest.spyOn(prisma.item, 'delete').mockResolvedValue(mockItem);
 
       const result = await service.remove('1');
       expect(result).toEqual(mockItem);
-      expect(prisma.items.delete).toHaveBeenCalledWith({
-        where: { id: '1' },
+      expect(prisma.item.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
       });
     });
 
     it('should throw NotFoundException if item not found', async () => {
       jest
-        .spyOn(prisma.items, 'delete')
+        .spyOn(prisma.item, 'delete')
         .mockRejectedValue(new Error('Record not found'));
 
       await expect(service.remove('1')).rejects.toThrow(NotFoundException);

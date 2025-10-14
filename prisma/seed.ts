@@ -2,11 +2,11 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 const items_demo_data = [
-	{ name: "Chocolate Chip Cookies"},
-	{ name: "Brookies"},
-	{ name: "Snickerdoodles"},
-	{ name: "Oatmeal Raisin"},
-]
+  { name: "Chocolate Chip Cookies", slug: "chocolate-chip-cookies" },
+  { name: "Brookies", slug: "brookies" },
+  { name: "Snickerdoodles", slug: "snickerdoodles" },
+  { name: "Oatmeal Raisin", slug: "oatmeal-raisin" },
+];
 
 // createMany
 // async function main() {
@@ -28,10 +28,10 @@ const items_demo_data = [
 // in parallel (smaller datasets only)
 async function main() {
   for (const item of items_demo_data) {
-    const result = await prisma.items.create({
-      data: item
-    })
-		console.log(result)
+    const result = await prisma.item.create({
+      data: item,
+    });
+    console.log(result);
   }
 }
 

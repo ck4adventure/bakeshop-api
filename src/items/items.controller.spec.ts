@@ -29,27 +29,29 @@ describe('ItemsController', () => {
 
   describe('create', () => {
     it('should call itemService.create and return its result', async () => {
-      const dto = { name: 'New Item' };
-      const result = { id: '1', name: 'New Item' };
-      const spy = jest.spyOn(service, 'create').mockResolvedValue(result);
+  const now = new Date();
+  const dto = { name: 'New Item' };
+  const result = { id: 1, name: 'New Item', slug: 'new-item', createdAt: now, updatedAt: now };
+  const spy = jest.spyOn(service, 'create').mockResolvedValue(result);
 
-      await expect(controller.create(dto)).resolves.toEqual(result);
-      expect(spy).toHaveBeenCalledWith(dto);
+  await expect(controller.create(dto)).resolves.toEqual(result);
+  expect(spy).toHaveBeenCalledWith(dto);
     });
   });
 
   describe('findAll', () => {
     it('should call itemService.findAll and return its result', async () => {
-      const result = [{ id: '1', name: 'Item 1' }];
-      const spy = jest.spyOn(service, 'findAll').mockResolvedValue(result);
+  const now = new Date();
+  const result = [{ id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now }];
+  const spy = jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
-      await expect(controller.findAll()).resolves.toEqual(result);
-      expect(spy).toHaveBeenCalled();
+  await expect(controller.findAll()).resolves.toEqual(result);
+  expect(spy).toHaveBeenCalled();
     });
 
     it('should return an empty array if itemService.findAll returns empty', async () => {
-      jest.spyOn(service, 'findAll').mockResolvedValue([]);
-      await expect(controller.findAll()).resolves.toEqual([]);
+  jest.spyOn(service, 'findAll').mockResolvedValue([]);
+  await expect(controller.findAll()).resolves.toEqual([]);
     });
 
     it('should propagate errors thrown by itemService.findAll', async () => {
@@ -62,11 +64,12 @@ describe('ItemsController', () => {
 
   describe('findOne', () => {
     it('should call itemService.findOne and return its result', async () => {
-      const result = { id: '1', name: 'Item 1' };
-      const spy = jest.spyOn(service, 'findOne').mockResolvedValue(result);
+  const now = new Date();
+  const result = { id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now };
+  const spy = jest.spyOn(service, 'findOne').mockResolvedValue(result);
 
-      await expect(controller.findOne('1')).resolves.toEqual(result);
-      expect(spy).toHaveBeenCalledWith('1');
+  await expect(controller.findOne('1')).resolves.toEqual(result);
+  expect(spy).toHaveBeenCalledWith('1');
     });
 
     it('should propagate errors thrown by itemService.findOne', async () => {
@@ -79,12 +82,13 @@ describe('ItemsController', () => {
 
   describe('update', () => {
     it('should call itemService.update and return its result', async () => {
-      const dto = { id: '1', name: 'Updated Item' };
-      const result = { id: '1', name: 'Updated Item' };
-      const spy = jest.spyOn(service, 'update').mockResolvedValue(result);
+  const now = new Date();
+  const dto = { id: '1', name: 'Updated Item' };
+  const result = { id: 1, name: 'Updated Item', slug: 'updated-item', createdAt: now, updatedAt: now };
+  const spy = jest.spyOn(service, 'update').mockResolvedValue(result);
 
-      await expect(controller.update('1', dto)).resolves.toEqual(result);
-      expect(spy).toHaveBeenCalledWith('1', dto);
+  await expect(controller.update('1', dto)).resolves.toEqual(result);
+  expect(spy).toHaveBeenCalledWith('1', dto);
     });
 
     it('should propagate errors thrown by itemService.update', async () => {
@@ -99,11 +103,12 @@ describe('ItemsController', () => {
 
   describe('remove', () => {
     it('should call itemService.remove and return its result', async () => {
-      const result = { id: '1', name: 'Deleted Item' };
-      const spy = jest.spyOn(service, 'remove').mockResolvedValue(result);
+  const now = new Date();
+  const result = { id: 1, name: 'Deleted Item', slug: 'deleted-item', createdAt: now, updatedAt: now };
+  const spy = jest.spyOn(service, 'remove').mockResolvedValue(result);
 
-      await expect(controller.remove('1')).resolves.toEqual(result);
-      expect(spy).toHaveBeenCalledWith('1');
+  await expect(controller.remove('1')).resolves.toEqual(result);
+  expect(spy).toHaveBeenCalledWith('1');
     });
 
     it('should propagate errors thrown by itemService.remove', async () => {
