@@ -9,6 +9,7 @@ import { logger } from './common/middleware/logging.middleware';
 import { AuthController } from './auth/auth.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { ItemsModule } from './items/items.module';
+import { ItemsController } from './items/items.controller';
 
 @Module({
   imports: [
@@ -37,6 +38,6 @@ import { ItemsModule } from './items/items.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(logger).forRoutes(AuthController);
+    consumer.apply(logger).forRoutes(AuthController, ItemsController);
   }
 }
