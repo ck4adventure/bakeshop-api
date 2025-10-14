@@ -1,7 +1,6 @@
 // items.spec.ts
 import { PrismaClient } from '@prisma/client';
 
-
 jest.mock('@prisma/client', () => {
   const items: any[] = [];
   let idCounter = 1;
@@ -73,7 +72,7 @@ describe('Items Model (Mocked Prisma)', () => {
 
   it('creates an item', async () => {
     const item = await prisma.item.create({
-      data: { name: 'Test Item', slug: "test-item" },
+      data: { name: 'Test Item', slug: 'test-item' },
     });
     itemId = item.id;
     expect(item.name).toBe('Test Item');

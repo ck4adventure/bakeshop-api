@@ -37,3 +37,22 @@ ALTER TABLE "InventoryTransaction" ADD CONSTRAINT "InventoryTransaction_itemId_f
 
 -- AddForeignKey
 ALTER TABLE "ItemInventory" ADD CONSTRAINT "ItemInventory_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Trigger for Inventory
+CREATE OR REPLACE FUNCTION update_item_inventory()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO "ItemInventory" ("itemId", "quantity")
+  VALUES (NEW."itemId", NEW."quantity")
+  ON CONFLICT ("itemId")
+  DO UPDATE SET "quantity" = "ItemInventory"."quantity" + NEW."quantity",
+                "updatedAt" = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_inventory
+AFTER INSERT ON "InventoryTransaction"
+FOR EACH ROW
+EXECUTE FUNCTION update_item_inventory();
+

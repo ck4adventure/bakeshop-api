@@ -23,7 +23,7 @@ model InventoryTransaction {
   product   Item     @relation(fields: [itemId], references: [id])
   itemId    Int
   quantity  Int // +10 = restock, -2 = sale
-  reason    String // evtl add an enum to restrict types
+  reason    InventoryReason
   createdAt DateTime @default(now())
 }
 
@@ -32,4 +32,11 @@ model ItemInventory {
   itemId    Int      @id
   quantity  Int      @default(0)
   updatedAt DateTime @updatedAt
+}
+
+enum InventoryReason {
+  BATCH // to add
+  BAKE // daily bake off
+  ADJUSTMENT // something fell on floor or burnt
+  // Add more as needed
 }

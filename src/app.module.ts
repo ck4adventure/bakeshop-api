@@ -10,6 +10,8 @@ import { AuthController } from './auth/auth.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { ItemsModule } from './items/items.module';
 import { ItemsController } from './items/items.controller';
+import { BatchesModule } from './batches/batches.module';
+import { BatchesController } from './batches/batches.controller';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { ItemsController } from './items/items.controller';
     AuthModule,
     UsersModule,
     ItemsModule,
+    BatchesModule,
   ],
   controllers: [AppController],
   providers: [
@@ -38,6 +41,8 @@ import { ItemsController } from './items/items.controller';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(logger).forRoutes(AuthController, ItemsController);
+    consumer
+      .apply(logger)
+      .forRoutes(AuthController, ItemsController, BatchesController);
   }
 }

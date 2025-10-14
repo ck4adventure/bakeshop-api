@@ -41,7 +41,15 @@ describe('ItemsService', () => {
   describe('findAll', () => {
     it('should return an array of items', async () => {
       const now = new Date();
-      const mockItems = [{ id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now }];
+      const mockItems = [
+        {
+          id: 1,
+          name: 'Item 1',
+          slug: 'item-1',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ];
       jest.spyOn(prisma.item, 'findMany').mockResolvedValue(mockItems);
 
       const result = await service.findAll();
@@ -50,10 +58,10 @@ describe('ItemsService', () => {
     });
 
     it('should return empty array if no items found', async () => {
-  jest.spyOn(prisma.item, 'findMany').mockResolvedValue([]);
+      jest.spyOn(prisma.item, 'findMany').mockResolvedValue([]);
 
-  const result = await service.findAll();
-  expect(result).toEqual([]);
+      const result = await service.findAll();
+      expect(result).toEqual([]);
     });
 
     it('should throw an error if prisma fails', async () => {
@@ -68,7 +76,13 @@ describe('ItemsService', () => {
   describe('findOne', () => {
     it('should return an item if found', async () => {
       const now = new Date();
-      const mockItem = { id: 1, name: 'Item 1', slug: 'item-1', createdAt: now, updatedAt: now };
+      const mockItem = {
+        id: 1,
+        name: 'Item 1',
+        slug: 'item-1',
+        createdAt: now,
+        updatedAt: now,
+      };
       jest.spyOn(prisma.item, 'findUnique').mockResolvedValue(mockItem);
 
       const result = await service.findOne('1');
@@ -79,9 +93,9 @@ describe('ItemsService', () => {
     });
 
     it('should throw NotFoundException if item not found', async () => {
-  jest.spyOn(prisma.item, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(prisma.item, 'findUnique').mockResolvedValue(null);
 
-  await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('1')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -89,7 +103,13 @@ describe('ItemsService', () => {
     it('should create and return an item', async () => {
       const now = new Date();
       const dto: CreateItemDto = { name: 'New Item' };
-      const mockItem = { id: 2, name: 'New Item', slug: 'new-item', createdAt: now, updatedAt: now };
+      const mockItem = {
+        id: 2,
+        name: 'New Item',
+        slug: 'new-item',
+        createdAt: now,
+        updatedAt: now,
+      };
       jest.spyOn(prisma.item, 'create').mockResolvedValue(mockItem);
 
       const result = await service.create(dto);
@@ -104,7 +124,13 @@ describe('ItemsService', () => {
     it('should update and return the item', async () => {
       const now = new Date();
       const dto: UpdateItemDto = { id: '1', name: 'Updated Item' };
-      const mockItem = { id: 1, name: 'Updated Item', slug: 'updated-item', createdAt: now, updatedAt: now };
+      const mockItem = {
+        id: 1,
+        name: 'Updated Item',
+        slug: 'updated-item',
+        createdAt: now,
+        updatedAt: now,
+      };
       jest.spyOn(prisma.item, 'update').mockResolvedValue(mockItem);
 
       const result = await service.update('1', dto);
@@ -129,7 +155,13 @@ describe('ItemsService', () => {
   describe('remove', () => {
     it('should delete and return the item', async () => {
       const now = new Date();
-      const mockItem = { id: 1, name: 'Deleted Item', slug: 'deleted-item', createdAt: now, updatedAt: now };
+      const mockItem = {
+        id: 1,
+        name: 'Deleted Item',
+        slug: 'deleted-item',
+        createdAt: now,
+        updatedAt: now,
+      };
       jest.spyOn(prisma.item, 'delete').mockResolvedValue(mockItem);
 
       const result = await service.remove('1');
