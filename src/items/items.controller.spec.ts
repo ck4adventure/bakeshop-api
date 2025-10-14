@@ -1,6 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+// items.controller.spec.ts
 import { ItemsController } from './items.controller';
 import { ItemsService } from './items.service';
+import { setupControllerTest } from '../../test/utils/setup-controller-test';
 
 describe('ItemsController', () => {
   let controller: ItemsController;
@@ -15,13 +16,11 @@ describe('ItemsController', () => {
       remove: jest.fn(),
     };
 
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [ItemsController],
-      providers: [{ provide: ItemsService, useValue: mockItemService }],
-    }).compile();
-
-    controller = module.get<ItemsController>(ItemsController);
-    service = module.get<ItemsService>(ItemsService);
+    ({ controller, service } = await setupControllerTest(
+      ItemsController,
+      ItemsService,
+      mockItemService,
+    ));
   });
 
   it('should be defined', () => {
