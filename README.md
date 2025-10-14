@@ -2,8 +2,28 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Backend Stack
+- Nestjs
+- Jest for testing
+- Prisma ORM to talk to the db
+- Postgresql, currently only supported locally
+- JWT sessions, global authguard
+
 ## Current Status
-Initial boilerplate project.
+### Feature: Items
+Working on initial feature, Items, and developing my workflow.
+
+1. Add changes to Prisma schema
+2. Push changes to local db `npx prisma db push`
+3. Create feature folder under `src`	
+4. Create jest feature spec file `[feature-name].spec.ts`
+5. Create feature `.service.ts` file, this holds all the methods available like getItems
+6. Create feature `.service.spec.ts` file and mock what's needed to run tests
+7. Create feature `.module.ts` file
+8. Create feature `.controller.ts` file and declare routes, connecting to service
+9. Create feature `.controller.spec.ts` file to test routes
+
+10. `npm run start` to test the route using Postman
 
 ## Feature Workflow
 1. Add changes to Prisma schema
