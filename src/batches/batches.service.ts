@@ -1,5 +1,9 @@
 // batches.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { InventoryReason } from '@prisma/client';
 
@@ -17,7 +21,9 @@ export class BatchesService {
     }
 
     // Optionally check item existence
-    const itemExists = await this.prisma.item.findUnique({ where: { id: itemId } });
+    const itemExists = await this.prisma.item.findUnique({
+      where: { id: itemId },
+    });
     if (!itemExists) {
       throw new NotFoundException(`Item with id ${itemId} not found`);
     }
