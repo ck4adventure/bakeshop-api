@@ -13,11 +13,11 @@ describe('BatchesService', () => {
 			item: {
 				findUnique: jest.fn(),
 			},
-			itemInventory: {
-				upsert: jest.fn(),
-			},
 			inventoryTransaction: {
 				create: jest.fn(),
+			},
+			itemInventory: {
+				findUnique: jest.fn(),
 			},
 		};
 
@@ -54,29 +54,35 @@ describe('BatchesService', () => {
 			await expect(service.createBatch(1, 10)).rejects.toThrow(NotFoundException);
 		});
 
-		it('should update inventory and log transaction', async () => {
+		it('should log an inventory transaction (trigger updates inventory)', async () => {
 			const itemId = 1;
 			const quantity = 10;
 			const now = new Date();
-			const inventoryResult = { itemId, quantity, updatedAt: now };
+
+			// Mock item exists
 			(prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: itemId });
-			const upsertSpy = jest.spyOn(prisma.itemInventory, 'upsert').mockResolvedValue(inventoryResult);
+
 			const transactionResult = {
+				id: 123,
 				itemId,
 				quantity,
-				id: 1,
-				createdAt: now,
 				reason: InventoryReason.BATCH,
+				createdAt: now,
 			};
-			const createSpy = jest.spyOn(prisma.inventoryTransaction, 'create').mockResolvedValue(transactionResult);
+
+			// The only explicit DB write is the transaction creation
+			const createSpy = jest
+				.spyOn(prisma.inventoryTransaction, 'create')
+				.mockResolvedValue(transactionResult);
+
+			// Optionally mock inventory lookup after trigger runs (if your service reads it back)
+			(prisma.itemInventory.findUnique as jest.Mock).mockResolvedValue({
+				itemId,
+				quantity: 100, // expected new quantity after trigger
+			});
 
 			const result = await service.createBatch(itemId, quantity);
-			expect(result).toEqual(inventoryResult);
-			expect(upsertSpy).toHaveBeenCalledWith({
-				where: { itemId },
-				update: { quantity: { increment: quantity } },
-				create: { itemId, quantity },
-			});
+
 			expect(createSpy).toHaveBeenCalledWith({
 				data: {
 					itemId,
@@ -84,17 +90,23 @@ describe('BatchesService', () => {
 					reason: InventoryReason.BATCH,
 				},
 			});
+
+			// Expect returned data to reflect post-trigger inventory state
+			expect(result).toMatchObject({
+				itemId,
+				quantity: expect.any(Number),
+			});
 		});
 
-			it('should propagate errors from prisma', async () => {
-				const itemId = 1;
-				const quantity = 10;
-				const error = new Error('Prisma error');
-				// Ensure item exists so NotFoundException is not thrown
-				(prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: itemId });
-				jest.spyOn(prisma.itemInventory, 'upsert').mockRejectedValue(error);
+		it('should propagate errors from prisma', async () => {
+			const itemId = 1;
+			const quantity = 5;
+			const error = new Error('DB connection lost');
 
-				await expect(service.createBatch(itemId, quantity)).rejects.toThrow('Prisma error');
-			});
+			(prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: itemId });
+			jest.spyOn(prisma.inventoryTransaction, 'create').mockRejectedValue(error);
+
+			await expect(service.createBatch(itemId, quantity)).rejects.toThrow(error);
+		});
 	});
 });

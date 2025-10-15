@@ -7,7 +7,7 @@ export class BatchesController {
   constructor(private batchesService: BatchesService) {}
 
   @Post()
-  async createBatch(@Body() body: { productId: number; quantity: number }) {
-    return this.batchesService.createBatch(body.productId, body.quantity);
+  async createBatch(@Body() body: { itemId: number; quantity: number }) {
+    return this.batchesService.createBatch(body.itemId, body.quantity);
   }
 }

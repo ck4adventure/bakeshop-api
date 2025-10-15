@@ -1,10 +1,13 @@
+-- CreateEnum
+CREATE TYPE "InventoryReason" AS ENUM ('BATCH', 'BAKE', 'ADJUSTMENT');
+
 -- CreateTable
 CREATE TABLE "Item" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
 );
@@ -14,7 +17,7 @@ CREATE TABLE "InventoryTransaction" (
     "id" SERIAL NOT NULL,
     "itemId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "reason" TEXT NOT NULL,
+    "reason" "InventoryReason" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "InventoryTransaction_pkey" PRIMARY KEY ("id")
@@ -24,7 +27,7 @@ CREATE TABLE "InventoryTransaction" (
 CREATE TABLE "ItemInventory" (
     "itemId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 0,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ItemInventory_pkey" PRIMARY KEY ("itemId")
 );
@@ -55,4 +58,3 @@ CREATE TRIGGER trg_update_inventory
 AFTER INSERT ON "InventoryTransaction"
 FOR EACH ROW
 EXECUTE FUNCTION update_item_inventory();
-

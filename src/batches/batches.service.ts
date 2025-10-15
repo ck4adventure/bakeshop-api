@@ -23,14 +23,14 @@ export class BatchesService {
     }
 
     // 1. Update inventory
-    const inventory = await this.prisma.itemInventory.upsert({
-      where: { itemId },
-      update: { quantity: { increment: quantity } },
-      create: { itemId, quantity },
-    });
+    // const inventory = await this.prisma.itemInventory.upsert({
+    //   where: { itemId },
+    //   update: { quantity: { increment: quantity } },
+    //   create: { itemId, quantity },
+    // });
 
     // 2. Log transaction
-    await this.prisma.inventoryTransaction.create({
+    const result = await this.prisma.inventoryTransaction.create({
       data: {
         itemId,
         quantity: quantity,
@@ -38,6 +38,6 @@ export class BatchesService {
       },
     });
 
-    return inventory;
+    return result;
   }
 }

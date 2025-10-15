@@ -26,11 +26,14 @@ Working on initial feature, Items, and developing my workflow.
 10. `npm run start` to test the route using Postman
 
 ## Feature Workflow
+### Prisma
 1. Add changes to Prisma schema
 2. All in one migration and application `npx prisma migrate dev`
-3. Boilerplate CRUD for a resource with `nest g resource [name]`
-4. Need to reset? `npx prisma migrate reset` (then run migrate again)
-5. Just seed the db `npx prisma db seed`
+4. Make a change to the migration file? Need to reset? `npx prisma migrate reset` (then run migrate dev again)
+5. To just seed the db `npx prisma db seed`
+
+### Nest Module
+Boilerplate CRUD for a resource with `nest g resource [name]`
 
 ## Project setup
 
