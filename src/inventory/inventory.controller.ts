@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -14,5 +22,4 @@ export class InventoryController {
   // findOne(@Param('id') id: string) {
   //   return this.inventoryService.findOne(+id);
   // }
-
 }

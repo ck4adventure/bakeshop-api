@@ -39,45 +39,47 @@ describe('BatchesService', () => {
 
   describe('createBatch', () => {
     it('should throw BadRequestException for invalid itemId', async () => {
-      await expect(service.createBatch({ itemId: 0, quantity: 10 })).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.createBatch({ itemId: -1, quantity: 10 })).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.createBatch({ itemId: 1.5, quantity: 10 })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.createBatch({ itemId: 0, quantity: 10 }),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createBatch({ itemId: -1, quantity: 10 }),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createBatch({ itemId: 1.5, quantity: 10 }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw BadRequestException for invalid quantity', async () => {
-      await expect(service.createBatch({ itemId: 1, quantity: 0 })).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.createBatch({ itemId: 1, quantity: -5 })).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.createBatch({ itemId: 1, quantity: 2.5 })).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.createBatch({ itemId: 1, quantity: 0 }),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createBatch({ itemId: 1, quantity: -5 }),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.createBatch({ itemId: 1, quantity: 2.5 }),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if item does not exist', async () => {
       (prisma.item.findUnique as jest.Mock).mockResolvedValue(null);
-      await expect(service.createBatch({ itemId: 1, quantity: 10 })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.createBatch({ itemId: 1, quantity: 10 }),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should log an inventory transaction (trigger updates inventory)', async () => {
       const batch: CreateBatchDto = {
-				itemId: 1,
-				quantity: 10
-			}
+        itemId: 1,
+        quantity: 10,
+      };
       const now = new Date();
 
       // Mock item exists
-      (prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: batch.itemId });
+      (prisma.item.findUnique as jest.Mock).mockResolvedValue({
+        id: batch.itemId,
+      });
 
       const transactionResult = {
         id: 2,
@@ -125,7 +127,7 @@ describe('BatchesService', () => {
         .spyOn(prisma.inventoryTransaction, 'create')
         .mockRejectedValue(error);
 
-      await expect(service.createBatch({ itemId, quantity})).rejects.toThrow(
+      await expect(service.createBatch({ itemId, quantity })).rejects.toThrow(
         error,
       );
     });

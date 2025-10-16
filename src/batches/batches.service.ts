@@ -13,10 +13,9 @@ export class BatchesService {
   constructor(private prisma: PrismaService) {}
 
   async createBatch(batchInfo: CreateBatchDto) {
+    const itemId = batchInfo.itemId;
+    const quantity = batchInfo.quantity;
 
-		const itemId = batchInfo.itemId;
-		const quantity = batchInfo.quantity;
-		
     // 0. validate incoming data
     if (!Number.isInteger(itemId) || itemId <= 0) {
       throw new BadRequestException('Invalid itemId');
