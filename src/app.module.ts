@@ -13,6 +13,8 @@ import { ItemsController } from './items/items.controller';
 import { BatchesModule } from './batches/batches.module';
 import { BatchesController } from './batches/batches.controller';
 import { InventoryModule } from './inventory/inventory.module';
+import { InventoryController } from './inventory/inventory.controller';
+import { ProductionScheduleModule } from './production_schedule/production_schedule.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { InventoryModule } from './inventory/inventory.module';
     ItemsModule,
     BatchesModule,
     InventoryModule,
+    ProductionScheduleModule,
   ],
   controllers: [AppController],
   providers: [
@@ -45,6 +48,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(logger)
-      .forRoutes(AuthController, ItemsController, BatchesController);
+      .forRoutes(AuthController, ItemsController, BatchesController, InventoryController);
   }
 }

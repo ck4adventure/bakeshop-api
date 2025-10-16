@@ -13,8 +13,13 @@
 ### Feature: Items
 Working on initial feature, Items, and developing my workflow.
 
+### Nest Module
+
+
 1. Add changes to Prisma schema
-2. Push changes to local db `npx prisma db push`
+2. Create migration, update db and generate: `npx prisma migrate dev`
+1. Generate boilerplate CRUD for a resource with `nest g resource [name]`
+OR
 3. Create feature folder under `src`	
 4. Create jest feature spec file `[feature-name].spec.ts`
 5. Create feature `.service.ts` file, this holds all the methods available like getItems
@@ -23,17 +28,16 @@ Working on initial feature, Items, and developing my workflow.
 8. Create feature `.controller.ts` file and declare routes, connecting to service
 9. Create feature `.controller.spec.ts` file to test routes
 
+Then
 10. `npm run start` to test the route using Postman
 
-## Feature Workflow
+## Common Actions
 ### Prisma
-1. Add changes to Prisma schema
-2. All in one migration and application `npx prisma migrate dev`
-4. Make a change to the migration file? Need to reset? `npx prisma migrate reset` (then run migrate dev again)
-5. To just seed the db `npx prisma db seed`
+- All in one migration and application `npx prisma migrate dev`
+- Make a change to the migration file? Need to reset db data? `npx prisma migrate reset` 
+- To just seed the db `npx prisma db seed`
 
-### Nest Module
-Boilerplate CRUD for a resource with `nest g resource [name]`
+
 
 ## Project setup
 
