@@ -42,10 +42,20 @@ enum InventoryReason {
   // Add more as needed
 }
 
+enum Weekday {
+  Sunday
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+}
+
 model ProductionSchedule {
   itemId Int  
-	weekday Int
-	quantity Int
-  item   Item @relation(fields: [itemId], references: [id])
+	weekday Weekday
+	quantity Int @default(0)
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
 	@@id([itemId, weekday])
 }
