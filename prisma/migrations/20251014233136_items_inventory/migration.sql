@@ -45,11 +45,10 @@ ALTER TABLE "ItemInventory" ADD CONSTRAINT "ItemInventory_itemId_fkey" FOREIGN K
 CREATE OR REPLACE FUNCTION update_item_inventory()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO "ItemInventory" ("itemId", "quantity")
-  VALUES (NEW."itemId", NEW."quantity")
+  INSERT INTO "ItemInventory" ("itemId", "quantity", "updatedAt")
+  VALUES (NEW."itemId", NEW."quantity", now())
   ON CONFLICT ("itemId")
-  DO UPDATE SET "quantity" = "ItemInventory"."quantity" + NEW."quantity",
-                "updatedAt" = now();
+  DO UPDATE SET "quantity" = "ItemInventory"."quantity" + NEW."quantity", "updatedAt" = now();
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

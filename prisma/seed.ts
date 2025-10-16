@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { InventoryReason, PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 const items_demo_data = [
@@ -28,10 +28,22 @@ const items_demo_data = [
 // in parallel (smaller datasets only)
 async function main() {
   for (const item of items_demo_data) {
-    const result = await prisma.item.create({
+		// create item
+    const itemResult = await prisma.item.create({
       data: item,
     });
-    console.log(result);
+    console.log("item created: ", itemResult);
+		// create batch for item to give it a quantity
+		const qty = itemResult.id * 10;
+		const batchResult = await prisma.inventoryTransaction.create({
+			data: {
+				itemId: itemResult.id,
+				quantity: qty,
+				reason: InventoryReason.BATCH
+			}
+		});
+		console.log("batch created: ", batchResult);
+
   }
 }
 

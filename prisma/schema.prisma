@@ -13,24 +13,25 @@ model Item {
   name         String
   slug         String                 @unique
   inventory    ItemInventory?
+  schedules    ProductionSchedule[]
   transactions InventoryTransaction[]
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
 }
 
 model InventoryTransaction {
-  id        Int      @id @default(autoincrement())
-  product   Item     @relation(fields: [itemId], references: [id])
+  id        Int             @id @default(autoincrement())
+  product   Item            @relation(fields: [itemId], references: [id])
   itemId    Int
   quantity  Int // +10 = restock, -2 = sale
   reason    InventoryReason
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
 }
 
 model ItemInventory {
-  item      Item     @relation(fields: [itemId], references: [id])
   itemId    Int      @id
   quantity  Int      @default(0)
+  item      Item     @relation(fields: [itemId], references: [id])
   updatedAt DateTime @updatedAt
 }
 
@@ -39,4 +40,12 @@ enum InventoryReason {
   BAKE // daily bake off
   ADJUSTMENT // something fell on floor or burnt
   // Add more as needed
+}
+
+model ProductionSchedule {
+  itemId Int  
+	weekday Int
+	quantity Int
+  item   Item @relation(fields: [itemId], references: [id])
+	@@id([itemId, weekday])
 }

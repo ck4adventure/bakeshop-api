@@ -12,6 +12,7 @@ import { ItemsModule } from './items/items.module';
 import { ItemsController } from './items/items.controller';
 import { BatchesModule } from './batches/batches.module';
 import { BatchesController } from './batches/batches.controller';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BatchesController } from './batches/batches.controller';
     UsersModule,
     ItemsModule,
     BatchesModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [
