@@ -27,7 +27,6 @@ export class InventoryService {
         },
       },
     });
-    console.log(results);
     return results;
   }
 }

@@ -1,25 +1,57 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { InventoryController } from './inventory.controller';
 import { InventoryService } from './inventory.service';
 import { setupControllerTest } from '../../test/utils/setup-controller-test';
 
 describe('InventoryController', () => {
-  let controller: InventoryController;
-  let service: InventoryService;
+	let controller: InventoryController;
+	let service: InventoryService;
 
-  beforeEach(async () => {
-    const mockInventoryService = {
-      findAll: jest.fn(),
-    };
+	beforeEach(async () => {
+		const mockInventoryService = {
+			findAll: jest.fn(),
+		};
 
-    ({ controller, service } = await setupControllerTest(
-      InventoryController,
-      InventoryService,
-      mockInventoryService,
-    ));
-  });
+		({ controller, service } = await setupControllerTest(
+			InventoryController,
+			InventoryService,
+			mockInventoryService,
+		));
+	});
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(controller).toBeDefined();
+	});
+
+	describe('findAll', () => {
+		it('should call inventoryService.findAll and return its result', async () => {
+			const now = new Date();
+			const result = [
+				{
+					"itemId": 1,
+					"quantity": 10,
+					"updatedAt": now,
+					"item": {
+						"name": "Item 1",
+						"slug": "item-1"
+					}
+				},
+			];
+			const spy = jest.spyOn(service, 'findAll').mockResolvedValue(result);
+
+			await expect(controller.findAll()).resolves.toEqual(result);
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should return an empty array if inventoryService.findAll returns empty', async () => {
+			jest.spyOn(service, 'findAll').mockResolvedValue([]);
+			await expect(controller.findAll()).resolves.toEqual([]);
+		});
+
+		it('should propagate errors thrown by inventoryService.findAll', async () => {
+			const error = new Error('Database error');
+			jest.spyOn(service, 'findAll').mockRejectedValue(error);
+
+			await expect(controller.findAll()).rejects.toThrow('Database error');
+		});
+	});
 });
