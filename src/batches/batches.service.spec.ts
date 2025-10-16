@@ -3,6 +3,7 @@ import { BatchesService } from './batches.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { InventoryReason } from '@prisma/client';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreateBatchDto } from './dto/create-batch.dto';
 
 describe('BatchesService', () => {
   let service: BatchesService;
@@ -38,48 +39,50 @@ describe('BatchesService', () => {
 
   describe('createBatch', () => {
     it('should throw BadRequestException for invalid itemId', async () => {
-      await expect(service.createBatch(0, 10)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 0, quantity: 10 })).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.createBatch(-1, 10)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: -1, quantity: 10 })).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.createBatch(1.5, 10)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 1.5, quantity: 10 })).rejects.toThrow(
         BadRequestException,
       );
     });
 
     it('should throw BadRequestException for invalid quantity', async () => {
-      await expect(service.createBatch(1, 0)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 1, quantity: 0 })).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.createBatch(1, -5)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 1, quantity: -5 })).rejects.toThrow(
         BadRequestException,
       );
-      await expect(service.createBatch(1, 2.5)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 1, quantity: 2.5 })).rejects.toThrow(
         BadRequestException,
       );
     });
 
     it('should throw NotFoundException if item does not exist', async () => {
       (prisma.item.findUnique as jest.Mock).mockResolvedValue(null);
-      await expect(service.createBatch(1, 10)).rejects.toThrow(
+      await expect(service.createBatch({ itemId: 1, quantity: 10 })).rejects.toThrow(
         NotFoundException,
       );
     });
 
     it('should log an inventory transaction (trigger updates inventory)', async () => {
-      const itemId = 1;
-      const quantity = 10;
+      const batch: CreateBatchDto = {
+				itemId: 1,
+				quantity: 10
+			}
       const now = new Date();
 
       // Mock item exists
-      (prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: itemId });
+      (prisma.item.findUnique as jest.Mock).mockResolvedValue({ id: batch.itemId });
 
       const transactionResult = {
-        id: 123,
-        itemId,
-        quantity,
+        id: 2,
+        itemId: batch.itemId,
+        quantity: batch.quantity,
         reason: InventoryReason.BATCH,
         createdAt: now,
       };
@@ -91,23 +94,23 @@ describe('BatchesService', () => {
 
       // Optionally mock inventory lookup after trigger runs (if your service reads it back)
       (prisma.itemInventory.findUnique as jest.Mock).mockResolvedValue({
-        itemId,
-        quantity: 100, // expected new quantity after trigger
+        itemId: batch.itemId,
+        quantity: 10, // expected new quantity after trigger
       });
 
-      const result = await service.createBatch(itemId, quantity);
+      const result = await service.createBatch({ itemId: 1, quantity: 10 });
 
       expect(createSpy).toHaveBeenCalledWith({
         data: {
-          itemId,
-          quantity,
+          itemId: batch.itemId,
+          quantity: batch.quantity,
           reason: InventoryReason.BATCH,
         },
       });
 
       // Expect returned data to reflect post-trigger inventory state
       expect(result).toMatchObject({
-        itemId,
+        itemId: batch.itemId,
         quantity: expect.any(Number),
       });
     });
@@ -122,7 +125,7 @@ describe('BatchesService', () => {
         .spyOn(prisma.inventoryTransaction, 'create')
         .mockRejectedValue(error);
 
-      await expect(service.createBatch(itemId, quantity)).rejects.toThrow(
+      await expect(service.createBatch({ itemId, quantity})).rejects.toThrow(
         error,
       );
     });

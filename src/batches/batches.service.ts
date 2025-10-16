@@ -6,12 +6,17 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { InventoryReason } from '@prisma/client';
+import { CreateBatchDto } from './dto/create-batch.dto';
 
 @Injectable()
 export class BatchesService {
   constructor(private prisma: PrismaService) {}
 
-  async createBatch(itemId: number, quantity: number) {
+  async createBatch(batchInfo: CreateBatchDto) {
+
+		const itemId = batchInfo.itemId;
+		const quantity = batchInfo.quantity;
+		
     // 0. validate incoming data
     if (!Number.isInteger(itemId) || itemId <= 0) {
       throw new BadRequestException('Invalid itemId');

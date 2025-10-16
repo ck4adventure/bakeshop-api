@@ -8,6 +8,6 @@ export class BatchesController {
 
   @Post()
   async createBatch(@Body() body: { itemId: number; quantity: number }) {
-    return this.batchesService.createBatch(body.itemId, body.quantity);
+    return this.batchesService.createBatch(body);
   }
 }

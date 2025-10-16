@@ -46,7 +46,7 @@ describe('BatchesController', () => {
         createdAt: expect.any(Date),
         id: 1,
       });
-      expect(spy).toHaveBeenCalledWith(body.itemId, body.quantity);
+      expect(spy).toHaveBeenCalledWith(body);
     });
 
     it('should propagate errors thrown by batchesService.createBatch', async () => {
