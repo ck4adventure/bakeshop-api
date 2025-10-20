@@ -8,6 +8,8 @@
 - Prisma ORM to talk to the db
 - Postgresql, currently only supported locally
 - JWT sessions, global authguard
+- Swagger for API routes and dtos.
+
 
 ## Current Status
 ### Feature: Items

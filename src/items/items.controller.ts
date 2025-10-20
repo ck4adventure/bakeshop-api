@@ -26,10 +26,14 @@ export class ItemsController {
     return this.itemService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.itemService.findOne(id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.itemService.findOne(slug);
   }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.itemService.findOne(id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {

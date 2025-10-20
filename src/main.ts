@@ -22,10 +22,9 @@ async function bootstrap() {
   // TODO swagger api only avail locally
   // swagger setup
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
+    .setTitle('Bakeoff API')
+    .setDescription('CRUD style API backend for the bakeoff inventory app')
+    .setVersion('0.1')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

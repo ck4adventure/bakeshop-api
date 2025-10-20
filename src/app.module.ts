@@ -50,8 +50,8 @@ export class AppModule implements NestModule {
       .apply(logger)
       .forRoutes(
         AuthController,
-        ItemsController,
         BatchesController,
+        ItemsController,
         InventoryController,
       );
   }
