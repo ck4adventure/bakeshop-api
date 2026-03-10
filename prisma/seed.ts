@@ -1,5 +1,14 @@
-import { InventoryReason, PrismaClient, Weekday } from '@prisma/client'
+import { InventoryReason, PrismaClient, Role, Weekday } from '@prisma/client'
+import * as bcrypt from 'bcrypt'
 const prisma = new PrismaClient()
+
+const SALT_ROUNDS = 10
+
+const users_demo_data = [
+	{ username: 'admin', email: 'admin@bakeshop.dev', password: 'admin123', role: Role.ADMIN },
+	{ username: 'manager', email: 'manager@bakeshop.dev', password: 'manager123', role: Role.MANAGER },
+	{ username: 'baker', email: 'baker@bakeshop.dev', password: 'baker123', role: Role.BAKER },
+]
 
 const items_demo_data = [
 	{ name: "Chocolate Chip Cookies", slug: "chocolate-chip-cookies" },
@@ -25,15 +34,28 @@ const items_demo_data = [
 //   }
 // }
 
-// in parallel (smaller datasets only)
 async function main() {
+	// seed users
+	for (const u of users_demo_data) {
+		const passwordHash = await bcrypt.hash(u.password, SALT_ROUNDS)
+		await prisma.user.upsert({
+			where: { username: u.username },
+			update: {},
+			create: { username: u.username, email: u.email, passwordHash, role: u.role },
+		})
+		console.log(`user seeded: ${u.username}`)
+	}
+
+	// seed items
 	for (const item of items_demo_data) {
 
-		// create item
-		const itemResult = await prisma.item.create({
-			data: item,
+		// create item (skip if already exists)
+		const itemResult = await prisma.item.upsert({
+			where: { slug: item.slug },
+			update: {},
+			create: item,
 		});
-		console.log("item created: ", itemResult);
+		console.log("item seeded: ", itemResult.slug);
 
 		// create batch for item to give it a quantity
 		const qty = itemResult.id * 10;
@@ -55,7 +77,7 @@ async function main() {
 		// 		weekday: Weekday.Sunday
 		// 	}
 		// })
-		const schedResult = await prisma.productionSchedule.createMany({
+		const schedResult = await prisma.productionSchedule.createMany({ skipDuplicates: true,
 			data: [
 				{
 					itemId: itemResult.id,

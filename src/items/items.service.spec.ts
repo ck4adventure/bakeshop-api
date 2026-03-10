@@ -88,7 +88,8 @@ describe('ItemsService', () => {
       const result = await service.findOne('1');
       expect(result).toEqual(mockItem);
       expect(prisma.item.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { slug: '1' },
+        include: { inventory: true },
       });
     });
 
@@ -136,7 +137,7 @@ describe('ItemsService', () => {
       const result = await service.update('1', dto);
       expect(result).toEqual(mockItem);
       expect(prisma.item.update).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { slug: '1' },
         data: { name: dto.name, slug: 'updated-item' },
       });
     });
