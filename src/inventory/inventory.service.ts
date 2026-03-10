@@ -10,7 +10,7 @@ export class InventoryService {
       where: { item: { bakeryId } },
       include: {
         item: {
-          select: { name: true, slug: true },
+          select: { name: true, slug: true, par: true },
         },
       },
     });

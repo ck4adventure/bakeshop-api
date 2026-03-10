@@ -26,7 +26,7 @@ describe('InventoryController', () => {
   describe('findAll', () => {
     it('should call inventoryService.findAll and return its result', async () => {
       const now = new Date();
-      const result = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1' } }];
+      const result = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1', par: null } }];
       const spy = jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
       await expect(controller.findAll(mockReq)).resolves.toEqual(result);

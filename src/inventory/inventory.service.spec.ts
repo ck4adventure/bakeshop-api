@@ -36,14 +36,14 @@ describe('InventoryService', () => {
   describe('findAll', () => {
     it('should return inventory scoped to the bakery', async () => {
       const now = new Date();
-      const mockInventory = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1' } }];
+      const mockInventory = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1', par: null } }];
       jest.spyOn(prisma.itemInventory, 'findMany').mockResolvedValue(mockInventory);
 
       const result = await service.findAll(BAKERY_ID);
       expect(result).toEqual(mockInventory);
       expect(prisma.itemInventory.findMany).toHaveBeenCalledWith({
         where: { item: { bakeryId: BAKERY_ID } },
-        include: { item: { select: { name: true, slug: true } } },
+        include: { item: { select: { name: true, slug: true, par: true } } },
       });
     });
 

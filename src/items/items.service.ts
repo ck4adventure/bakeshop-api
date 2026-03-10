@@ -20,6 +20,7 @@ export class ItemsService {
 				name: createItemDto.name,
 				slug: slugify(createItemDto.name),
 				bakeryId,
+				...(createItemDto.par !== undefined && { par: createItemDto.par }),
 			},
 		});
 	}
@@ -49,6 +50,7 @@ export class ItemsService {
 			data: {
 				name: updateItemDto.name,
 				slug: slugify(updateItemDto.name ?? ''),
+				...(updateItemDto.par !== undefined && { par: updateItemDto.par }),
 			},
 		});
 	}
