@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 // is an Express platform application by default
 // but we set it explicity
@@ -29,7 +30,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-  // TODO global validation pipe to sanitize and validate incoming requests
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // for express platform http adapter
   app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
