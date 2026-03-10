@@ -4,6 +4,8 @@ const prisma = new PrismaClient()
 
 const SALT_ROUNDS = 10
 
+const demo_bakery = { name: "Demo Bakery", slug: "demo-bakery" }
+
 const users_demo_data = [
 	{ username: 'admin', email: 'admin@bakeshop.dev', password: 'admin123', role: Role.ADMIN },
 	{ username: 'manager', email: 'manager@bakeshop.dev', password: 'manager123', role: Role.MANAGER },
@@ -35,13 +37,21 @@ const items_demo_data = [
 // }
 
 async function main() {
-	// seed users
+	// seed demo bakery
+	const bakery = await prisma.bakery.upsert({
+		where: { slug: demo_bakery.slug },
+		update: {},
+		create: demo_bakery,
+	})
+	console.log(`bakery seeded: ${bakery.slug}`)
+
+	// seed users, linked to demo bakery
 	for (const u of users_demo_data) {
 		const passwordHash = await bcrypt.hash(u.password, SALT_ROUNDS)
 		await prisma.user.upsert({
 			where: { username: u.username },
-			update: {},
-			create: { username: u.username, email: u.email, passwordHash, role: u.role },
+			update: { bakeryId: bakery.id },
+			create: { username: u.username, email: u.email, passwordHash, role: u.role, bakeryId: bakery.id },
 		})
 		console.log(`user seeded: ${u.username}`)
 	}

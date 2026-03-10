@@ -20,7 +20,12 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(pass, user.passwordHash))) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.id, username: user.username, role: user.role };
+    const payload = {
+      sub: user.id,
+      username: user.username,
+      role: user.role,
+      bakerySlug: user.bakery?.slug ?? null,
+    };
     const secret = this.configService.get<string>('JWT_ACCESS_SECRET');
 
     return {

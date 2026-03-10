@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --------   Bakery   ----------
+model Bakery {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // --------   Users   ----------
 enum Role {
   ADMIN
@@ -20,6 +30,8 @@ model User {
   email        String   @unique
   passwordHash String
   role         Role     @default(BAKER)
+  bakery       Bakery?  @relation(fields: [bakeryId], references: [id])
+  bakeryId     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
