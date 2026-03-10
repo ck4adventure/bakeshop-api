@@ -32,22 +32,18 @@ export class BatchesService {
       throw new NotFoundException(`Item with id ${itemId} not found`);
     }
 
-    // 1. Update inventory
-    // const inventory = await this.prisma.itemInventory.upsert({
-    //   where: { itemId },
-    //   update: { quantity: { increment: quantity } },
-    //   create: { itemId, quantity },
-    // });
+    // Atomically update inventory and log the transaction
+    const [, transaction] = await this.prisma.$transaction([
+      this.prisma.itemInventory.upsert({
+        where: { itemId },
+        update: { quantity: { increment: quantity } },
+        create: { itemId, quantity },
+      }),
+      this.prisma.inventoryTransaction.create({
+        data: { itemId, quantity, reason: InventoryReason.BATCH },
+      }),
+    ]);
 
-    // 2. Log transaction
-    const result = await this.prisma.inventoryTransaction.create({
-      data: {
-        itemId,
-        quantity: quantity,
-        reason: InventoryReason.BATCH,
-      },
-    });
-
-    return result;
+    return transaction;
   }
 }
