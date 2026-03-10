@@ -7,7 +7,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Items {
-  id   String @id @default(uuid())
-  name String @unique
+// --------   Bakery   ----------
+model Bakery {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  users     User[]
+  items     Item[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --------   Users   ----------
+enum Role {
+  ADMIN
+  MANAGER
+  BAKER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(BAKER)
+  bakery       Bakery?  @relation(fields: [bakeryId], references: [id])
+  bakeryId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// --------   Items   ----------
+model Item {
+  id           Int                    @id @default(autoincrement())
+  name         String
+  slug         String                 @unique
+  bakery       Bakery?                @relation(fields: [bakeryId], references: [id])
+  bakeryId     String?
+  inventory    ItemInventory?
+  schedules    ProductionSchedule[]
+  transactions InventoryTransaction[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+}
+
+model InventoryTransaction {
+  id        Int             @id @default(autoincrement())
+  product   Item            @relation(fields: [itemId], references: [id])
+  itemId    Int
+  quantity  Int // +10 = restock, -2 = sale
+  reason    InventoryReason
+  createdAt DateTime        @default(now())
+}
+
+model ItemInventory {
+  itemId    Int      @id
+  quantity  Int      @default(0)
+  item      Item     @relation(fields: [itemId], references: [id])
+  updatedAt DateTime @updatedAt
+}
+
+enum InventoryReason {
+  BATCH // to add
+  BAKE // daily bake off
+  ADJUSTMENT // something fell on floor or burnt
+  // Add more as needed
+}
+
+enum Weekday {
+  Sunday
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+}
+
+model ProductionSchedule {
+  itemId Int  
+	weekday Weekday
+	quantity Int @default(0)
+  item   Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+	@@id([itemId, weekday])
 }

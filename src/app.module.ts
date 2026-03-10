@@ -9,6 +9,12 @@ import { logger } from './common/middleware/logging.middleware';
 import { AuthController } from './auth/auth.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { ItemsModule } from './items/items.module';
+import { ItemsController } from './items/items.controller';
+import { BatchesModule } from './batches/batches.module';
+import { BatchesController } from './batches/batches.controller';
+import { InventoryModule } from './inventory/inventory.module';
+import { InventoryController } from './inventory/inventory.controller';
+import { ProductionScheduleModule } from './production_schedule/production_schedule.module';
 
 @Module({
   imports: [
@@ -25,6 +31,9 @@ import { ItemsModule } from './items/items.module';
     AuthModule,
     UsersModule,
     ItemsModule,
+    BatchesModule,
+    InventoryModule,
+    ProductionScheduleModule,
   ],
   controllers: [AppController],
   providers: [
@@ -37,6 +46,13 @@ import { ItemsModule } from './items/items.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(logger).forRoutes(AuthController);
+    consumer
+      .apply(logger)
+      .forRoutes(
+        AuthController,
+        BatchesController,
+        ItemsController,
+        InventoryController,
+      );
   }
 }

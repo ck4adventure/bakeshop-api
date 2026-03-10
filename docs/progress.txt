@@ -1,0 +1,6 @@
+Great — this is a perfect example of how real-world bakery operations evolve beyond just fixed schedules. You're now designing a flexible weekly bake plan, with room for:
+
+1. Recurring schedules (baseline)
+1. Special order overrides (per product per day)
+1. Manager overrides (manual changes)
+1. A final baking list that combines all these inputs

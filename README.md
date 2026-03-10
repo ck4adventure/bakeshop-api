@@ -2,13 +2,43 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Current Status
-Initial boilerplate project.
+## Backend Stack
+- Nestjs
+- Jest for testing
+- Prisma ORM to talk to the db
+- Postgresql, currently only supported locally
+- JWT sessions, global authguard
+- Swagger for API routes and dtos.
 
-## Feature Workflow
+
+## Current Status
+### Feature: Items
+Working on initial feature, Items, and developing my workflow.
+
+### Nest Module
+
+
 1. Add changes to Prisma schema
-2. All in one migration and application `npx prisma migrate dev`
-3. Boilerplate CRUD for a resource with `nest g resource [name]`
+2. Create migration, update db and generate: `npx prisma migrate dev`
+1. Generate boilerplate CRUD for a resource with `nest g resource [name]`
+OR
+3. Create feature folder under `src`	
+4. Create jest feature spec file `[feature-name].spec.ts`
+5. Create feature `.service.ts` file, this holds all the methods available like getItems
+6. Create feature `.service.spec.ts` file and mock what's needed to run tests
+7. Create feature `.module.ts` file
+8. Create feature `.controller.ts` file and declare routes, connecting to service
+9. Create feature `.controller.spec.ts` file to test routes
+
+Then
+10. `npm run start` to test the route using Postman
+
+## Common Actions
+### Prisma
+- All in one migration and application `npx prisma migrate dev`
+- Make a change to the migration file? Need to reset db data? `npx prisma migrate reset` 
+- To just seed the db `npx prisma db seed`
+
 
 
 ## Project setup

@@ -6,38 +6,38 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Public } from '../auth/metadata';
 
 @Controller('items')
 export class ItemsController {
   constructor(private readonly itemService: ItemsService) {}
 
   @Post()
-  create(@Body() createItemDto: CreateItemDto) {
-    return this.itemService.create(createItemDto);
+  create(@Body() createItemDto: CreateItemDto, @Req() req: any) {
+    return this.itemService.create(createItemDto, req.user.bakeryId);
   }
-  @Public()
+
   @Get()
-  findAll() {
-    return this.itemService.findAll();
+  findAll(@Req() req: any) {
+    return this.itemService.findAll(req.user.bakeryId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.itemService.findOne(+id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string, @Req() req: any) {
+    return this.itemService.findOne(slug, req.user.bakeryId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto) {
-    return this.itemService.update(+id, updateItemDto);
+  @Patch(':slug')
+  update(@Param('slug') slug: string, @Body() updateItemDto: UpdateItemDto, @Req() req: any) {
+    return this.itemService.update(slug, updateItemDto, req.user.bakeryId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.itemService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.itemService.remove(id, req.user.bakeryId);
   }
 }
