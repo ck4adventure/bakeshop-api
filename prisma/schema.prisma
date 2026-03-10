@@ -13,6 +13,7 @@ model Bakery {
   name      String
   slug      String   @unique
   users     User[]
+  items     Item[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -41,6 +42,8 @@ model Item {
   id           Int                    @id @default(autoincrement())
   name         String
   slug         String                 @unique
+  bakery       Bakery?                @relation(fields: [bakeryId], references: [id])
+  bakeryId     String?
   inventory    ItemInventory?
   schedules    ProductionSchedule[]
   transactions InventoryTransaction[]

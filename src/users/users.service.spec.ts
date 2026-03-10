@@ -24,14 +24,14 @@ describe('UsersService', () => {
   });
 
   it('findOne returns user with bakery when found', async () => {
-    const mockUser = { id: '1', username: 'baker', passwordHash: 'hash', role: 'BAKER', bakery: { slug: 'demo-bakery' } };
+    const mockUser = { id: '1', username: 'baker', passwordHash: 'hash', role: 'BAKER', bakery: { id: 'bakery-uuid-1', slug: 'demo-bakery' } };
     prisma.user.findUnique.mockResolvedValue(mockUser);
 
     const result = await service.findOne('baker');
     expect(result).toEqual(mockUser);
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
       where: { username: 'baker' },
-      include: { bakery: { select: { slug: true } } },
+      include: { bakery: { select: { id: true, slug: true } } },
     });
   });
 

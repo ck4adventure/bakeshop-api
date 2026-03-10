@@ -24,6 +24,7 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       role: user.role,
+      bakeryId: user.bakery?.id ?? null,
       bakerySlug: user.bakery?.slug ?? null,
     };
     const secret = this.configService.get<string>('JWT_ACCESS_SECRET');

@@ -4,6 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InventoryService } from './inventory.service';
 import { PrismaService } from '../prisma/prisma.service';
 
+const BAKERY_ID = 'bakery-uuid-1';
+
 describe('InventoryService', () => {
   let service: InventoryService;
   let prisma: PrismaService;
@@ -32,41 +34,28 @@ describe('InventoryService', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of inventory results', async () => {
+    it('should return inventory scoped to the bakery', async () => {
       const now = new Date();
-      const mockInventory = [
-        {
-          itemId: 1,
-          quantity: 10,
-          updatedAt: now,
-          item: {
-            name: 'Item 1',
-            slug: 'item-1',
-          },
-        },
-      ];
-      jest
-        .spyOn(prisma.itemInventory, 'findMany')
-        .mockResolvedValue(mockInventory);
+      const mockInventory = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1' } }];
+      jest.spyOn(prisma.itemInventory, 'findMany').mockResolvedValue(mockInventory);
 
-      const result = await service.findAll();
+      const result = await service.findAll(BAKERY_ID);
       expect(result).toEqual(mockInventory);
-      expect(prisma.itemInventory.findMany).toHaveBeenCalled();
+      expect(prisma.itemInventory.findMany).toHaveBeenCalledWith({
+        where: { item: { bakeryId: BAKERY_ID } },
+        include: { item: { select: { name: true, slug: true } } },
+      });
     });
 
-    it('should return empty array if no inventory results found', async () => {
+    it('should return empty array if no inventory found', async () => {
       jest.spyOn(prisma.itemInventory, 'findMany').mockResolvedValue([]);
-
-      const result = await service.findAll();
+      const result = await service.findAll(BAKERY_ID);
       expect(result).toEqual([]);
     });
 
     it('should throw an error if prisma fails', async () => {
-      jest
-        .spyOn(prisma.itemInventory, 'findMany')
-        .mockRejectedValue(new Error('Database error'));
-
-      await expect(service.findAll()).rejects.toThrow('Database error');
+      jest.spyOn(prisma.itemInventory, 'findMany').mockRejectedValue(new Error('Database error'));
+      await expect(service.findAll(BAKERY_ID)).rejects.toThrow('Database error');
     });
   });
 });

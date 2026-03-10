@@ -38,13 +38,13 @@ describe('AuthService', () => {
       username: 'baker',
       passwordHash: hash,
       role: 'BAKER',
-      bakery: { slug: 'demo-bakery' },
+      bakery: { id: 'bakery-uuid-1', slug: 'demo-bakery' },
     });
 
     const result = await service.signIn('baker', 'correct-pass');
     expect(result).toEqual({ access_token: 'signed-token' });
     expect(jwtService.signAsync).toHaveBeenCalledWith(
-      { sub: 'uuid-1', username: 'baker', role: 'BAKER', bakerySlug: 'demo-bakery' },
+      { sub: 'uuid-1', username: 'baker', role: 'BAKER', bakeryId: 'bakery-uuid-1', bakerySlug: 'demo-bakery' },
       { secret: 'test-secret' },
     );
   });

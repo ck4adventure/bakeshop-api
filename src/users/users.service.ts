@@ -6,10 +6,10 @@ import { User } from '@prisma/client';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(username: string): Promise<User & { bakery: { slug: string } | null } | null> {
+  async findOne(username: string): Promise<User & { bakery: { id: string; slug: string } | null } | null> {
     return this.prisma.user.findUnique({
       where: { username },
-      include: { bakery: { select: { slug: true } } },
+      include: { bakery: { select: { id: true, slug: true } } },
     });
   }
 }

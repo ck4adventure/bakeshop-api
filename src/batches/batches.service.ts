@@ -12,7 +12,7 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 export class BatchesService {
   constructor(private prisma: PrismaService) {}
 
-  async createBatch(batchInfo: CreateBatchDto) {
+  async createBatch(batchInfo: CreateBatchDto, bakeryId: string) {
     const itemId = batchInfo.itemId;
     const quantity = batchInfo.quantity;
 
@@ -24,9 +24,9 @@ export class BatchesService {
       throw new BadRequestException('Quantity must be a positive integer');
     }
 
-    // Optionally check item existence
-    const itemExists = await this.prisma.item.findUnique({
-      where: { id: itemId },
+    // Verify item exists and belongs to this bakery
+    const itemExists = await this.prisma.item.findFirst({
+      where: { id: itemId, bakeryId },
     });
     if (!itemExists) {
       throw new NotFoundException(`Item with id ${itemId} not found`);

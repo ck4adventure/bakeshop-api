@@ -59,11 +59,11 @@ async function main() {
 	// seed items
 	for (const item of items_demo_data) {
 
-		// create item (skip if already exists)
+		// create item (skip if already exists), always link to bakery
 		const itemResult = await prisma.item.upsert({
 			where: { slug: item.slug },
-			update: {},
-			create: item,
+			update: { bakeryId: bakery.id },
+			create: { ...item, bakeryId: bakery.id },
 		});
 		console.log("item seeded: ", itemResult.slug);
 
