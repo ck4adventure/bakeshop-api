@@ -12,6 +12,22 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 export class BatchesService {
   constructor(private prisma: PrismaService) {}
 
+  async findAll(bakeryId: string) {
+    return this.prisma.inventoryTransaction.findMany({
+      where: {
+        reason: InventoryReason.BATCH,
+        product: { bakeryId },
+      },
+      include: {
+        product: {
+          select: { name: true, slug: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+  }
+
   async createBatch(batchInfo: CreateBatchDto, bakeryId: string) {
     const itemId = batchInfo.itemId;
     const quantity = batchInfo.quantity;

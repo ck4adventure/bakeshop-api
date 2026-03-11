@@ -32,9 +32,8 @@
 ### Batches (Raw dough → Freezer)
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
+| GET | `/batches` | JWT | List last 100 raw dough batch transactions, newest first |
 | POST | `/batches` | JWT | Log a new raw dough batch; adds to frozen inventory (BATCH transaction) |
-
-> **Missing:** GET `/batches` — batch history log (not yet built)
 
 ### Inventory
 | Method | Path | Auth | Description |
