@@ -58,6 +58,9 @@
 | POST | `/production-schedule` | JWT | Create or upsert a schedule entry |
 | PATCH | `/production-schedule/:itemId/:weekday` | JWT | Update quota for one item/weekday |
 | DELETE | `/production-schedule/:itemId/:weekday` | JWT | Remove a schedule entry |
+| GET | `/production-schedule/overrides?date=YYYY-MM-DD` | JWT | Get all overrides for a specific date |
+| POST | `/production-schedule/overrides` | JWT | Upsert a one-day quota override. Body: `{ itemId, date, quantity }` |
+| DELETE | `/production-schedule/overrides/:itemId/:date` | JWT | Remove a one-day override |
 
 > **Missing:** Daily override — one-off quota adjustment for a specific date without touching the weekly template. Not yet built.
 

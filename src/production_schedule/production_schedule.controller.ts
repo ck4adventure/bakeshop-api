@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   Req,
   ParseIntPipe,
   ParseEnumPipe,
@@ -51,6 +52,35 @@ export class ProductionScheduleController {
     @Req() req: any,
   ) {
     return this.productionScheduleService.update(itemId, weekday, dto, req.user.bakeryId);
+  }
+
+  // ── Daily quota overrides ────────────────────────────────────────────────────
+
+  // GET /production-schedule/overrides?date=YYYY-MM-DD
+  @Get('overrides')
+  findOverrides(@Query('date') date: string, @Req() req: any) {
+    return this.productionScheduleService.findOverridesForDate(date, req.user.bakeryId);
+  }
+
+  // POST /production-schedule/overrides — upsert override for a specific date
+  @Post('overrides')
+  upsertOverride(
+    @Body() body: { itemId: number; date: string; quantity: number },
+    @Req() req: any,
+  ) {
+    return this.productionScheduleService.upsertOverride(
+      body.itemId, body.date, body.quantity, req.user.bakeryId,
+    );
+  }
+
+  // DELETE /production-schedule/overrides/:itemId/:date
+  @Delete('overrides/:itemId/:date')
+  removeOverride(
+    @Param('itemId', ParseIntPipe) itemId: number,
+    @Param('date') date: string,
+    @Req() req: any,
+  ) {
+    return this.productionScheduleService.removeOverride(itemId, date, req.user.bakeryId);
   }
 
   // DELETE /production-schedule/:itemId/:weekday

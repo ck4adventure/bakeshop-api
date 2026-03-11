@@ -53,6 +53,34 @@ export class ProductionScheduleService {
     });
   }
 
+  // ── Daily quota overrides ────────────────────────────────────────────────────
+
+  async findOverridesForDate(date: string, bakeryId: string) {
+    return this.prisma.dailyQuotaOverride.findMany({
+      where: { date: new Date(date), bakeryId },
+      include: { item: { select: { name: true, slug: true } } },
+    });
+  }
+
+  async upsertOverride(itemId: number, date: string, quantity: number, bakeryId: string) {
+    const item = await this.prisma.item.findFirst({ where: { id: itemId, bakeryId } });
+    if (!item) throw new NotFoundException(`Item ${itemId} not found`);
+
+    return this.prisma.dailyQuotaOverride.upsert({
+      where: { itemId_date: { itemId, date: new Date(date) } },
+      create: { itemId, bakeryId, date: new Date(date), quantity },
+      update: { quantity },
+    });
+  }
+
+  async removeOverride(itemId: number, date: string, bakeryId: string) {
+    const existing = await this.prisma.dailyQuotaOverride.findFirst({
+      where: { itemId, date: new Date(date), bakeryId },
+    });
+    if (!existing) throw new NotFoundException('Override not found');
+    return this.prisma.dailyQuotaOverride.delete({ where: { id: existing.id } });
+  }
+
   // Remove a single entry
   async remove(itemId: number, weekday: Weekday, bakeryId: string) {
     const existing = await this.prisma.productionSchedule.findFirst({
