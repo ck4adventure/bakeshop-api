@@ -48,7 +48,7 @@
 
 | POST | `/inventory/bake` | JWT | Record a completed morning bake; deducts from frozen inventory (BAKE transaction). Body: `{ itemId, quantity, note? }` |
 
-> **Missing:** POST `/inventory/adjust` — manual stock correction with note (ADJUSTMENT transaction). Not yet built.
+| POST | `/inventory/adjust` | JWT | Manual stock correction. Body: `{ itemId, quantity, note }` — quantity can be negative (waste/loss). Note is required. |
 
 ### Production Schedule (Daily bake quotas)
 | Method | Path | Auth | Description |
