@@ -11,6 +11,53 @@
 - Swagger for API routes and dtos.
 
 
+## API Routes
+
+### Auth
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/auth/login` | Public | Sign in, sets HttpOnly access token cookie |
+| POST | `/auth/logout` | Public | Clear auth cookie |
+| GET | `/auth/profile` | JWT | Get current user profile |
+
+### Items
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/items` | JWT | Create a new item |
+| GET | `/items` | JWT | List all items for the bakery |
+| GET | `/items/:slug` | JWT | Get item by slug |
+| PATCH | `/items/:slug` | JWT | Update item by slug |
+| DELETE | `/items/:id` | JWT | Delete item by ID |
+
+### Batches (Raw dough → Freezer)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/batches` | JWT | Log a new raw dough batch; adds to frozen inventory (BATCH transaction) |
+
+> **Missing:** GET `/batches` — batch history log (not yet built)
+
+### Inventory
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/inventory` | JWT | Get all current frozen stock levels with item info |
+
+| POST | `/inventory/bake` | JWT | Record a completed morning bake; deducts from frozen inventory (BAKE transaction). Body: `{ itemId, quantity, note? }` |
+
+> **Missing:** POST `/inventory/adjust` — manual stock correction with note (ADJUSTMENT transaction). Not yet built.
+
+### Production Schedule (Daily bake quotas)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/production-schedule` | JWT | Get full weekly quota schedule |
+| GET | `/production-schedule/item/:itemId` | JWT | Get all weekday quotas for one item |
+| POST | `/production-schedule` | JWT | Create or upsert a schedule entry |
+| PATCH | `/production-schedule/:itemId/:weekday` | JWT | Update quota for one item/weekday |
+| DELETE | `/production-schedule/:itemId/:weekday` | JWT | Remove a schedule entry |
+
+> **Missing:** Daily override — one-off quota adjustment for a specific date without touching the weekly template. Not yet built.
+
+---
+
 ## Current Status
 ### Feature: Items
 Working on initial feature, Items, and developing my workflow.

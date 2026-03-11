@@ -9,4 +9,9 @@ export class CreateItemDto {
   @IsInt()
   @Min(0)
   par?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  defaultBatchQty?: number;
 }

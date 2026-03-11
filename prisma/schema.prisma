@@ -39,11 +39,12 @@ model User {
 
 // --------   Items   ----------
 model Item {
-  id           Int                    @id @default(autoincrement())
-  name         String
-  slug         String                 @unique
-  par          Int?
-  bakery       Bakery?                @relation(fields: [bakeryId], references: [id])
+  id              Int                    @id @default(autoincrement())
+  name            String
+  slug            String                 @unique
+  par             Int?
+  defaultBatchQty Int?
+  bakery          Bakery?                @relation(fields: [bakeryId], references: [id])
   bakeryId     String?
   inventory    ItemInventory?
   schedules    ProductionSchedule[]
@@ -56,8 +57,9 @@ model InventoryTransaction {
   id        Int             @id @default(autoincrement())
   product   Item            @relation(fields: [itemId], references: [id])
   itemId    Int
-  quantity  Int // +10 = restock, -2 = sale
+  quantity  Int // positive = added to freezer, negative = removed (bake/adjustment)
   reason    InventoryReason
+  note      String?         // optional explanation (e.g. qty differs from quota)
   createdAt DateTime        @default(now())
 }
 

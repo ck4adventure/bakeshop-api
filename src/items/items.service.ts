@@ -21,6 +21,7 @@ export class ItemsService {
 				slug: slugify(createItemDto.name),
 				bakeryId,
 				...(createItemDto.par !== undefined && { par: createItemDto.par }),
+				...(createItemDto.defaultBatchQty !== undefined && { defaultBatchQty: createItemDto.defaultBatchQty }),
 			},
 		});
 	}
@@ -51,6 +52,7 @@ export class ItemsService {
 				name: updateItemDto.name,
 				slug: slugify(updateItemDto.name ?? ''),
 				...(updateItemDto.par !== undefined && { par: updateItemDto.par }),
+				...(updateItemDto.defaultBatchQty !== undefined && { defaultBatchQty: updateItemDto.defaultBatchQty }),
 			},
 		});
 	}
