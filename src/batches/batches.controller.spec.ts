@@ -29,7 +29,7 @@ describe('BatchesController', () => {
   describe('createBatch', () => {
     it('should call batchesService.createBatch and return its result', async () => {
       const body = { itemId: 1, quantity: 10 };
-      const result = { id: 1, itemId: 1, quantity: 10, reason: InventoryReason.BATCH, createdAt: new Date() };
+      const result = { id: 1, itemId: 1, quantity: 10, reason: InventoryReason.BATCH, note: null, createdAt: new Date() };
       const spy = jest.spyOn(service, 'createBatch').mockResolvedValue(result);
 
       await expect(controller.createBatch(body, mockReq)).resolves.toMatchObject({

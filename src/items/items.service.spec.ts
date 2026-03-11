@@ -44,7 +44,7 @@ describe('ItemsService', () => {
   describe('findAll', () => {
     it('should return items for the bakery', async () => {
       const now = new Date();
-      const mockItems = [{ id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now }];
+      const mockItems = [{ id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now }];
       jest.spyOn(prisma.item, 'findMany').mockResolvedValue(mockItems);
 
       const result = await service.findAll(BAKERY_ID);
@@ -67,7 +67,7 @@ describe('ItemsService', () => {
   describe('findOne', () => {
     it('should return an item if found', async () => {
       const now = new Date();
-      const mockItem = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const mockItem = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       jest.spyOn(prisma.item, 'findFirst').mockResolvedValue(mockItem);
 
       const result = await service.findOne('item-1', BAKERY_ID);
@@ -88,7 +88,7 @@ describe('ItemsService', () => {
     it('should create and return an item scoped to the bakery', async () => {
       const now = new Date();
       const dto: CreateItemDto = { name: 'New Item' };
-      const mockItem = { id: 2, name: 'New Item', slug: 'new-item', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const mockItem = { id: 2, name: 'New Item', slug: 'new-item', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       jest.spyOn(prisma.item, 'create').mockResolvedValue(mockItem);
 
       const result = await service.create(dto, BAKERY_ID);
@@ -103,7 +103,7 @@ describe('ItemsService', () => {
     it('should update and return the item', async () => {
       const now = new Date();
       const dto: UpdateItemDto = { id: '1', name: 'Updated Item' };
-      const existing = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const existing = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       const updated = { ...existing, name: 'Updated Item', slug: 'updated-item' };
 
       jest.spyOn(prisma.item, 'findFirst').mockResolvedValue(existing);
@@ -127,7 +127,7 @@ describe('ItemsService', () => {
   describe('remove', () => {
     it('should delete and return the item', async () => {
       const now = new Date();
-      const existing = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const existing = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       jest.spyOn(prisma.item, 'findFirst').mockResolvedValue(existing);
       jest.spyOn(prisma.item, 'delete').mockResolvedValue(existing);
 

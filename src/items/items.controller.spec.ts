@@ -34,7 +34,7 @@ describe('ItemsController', () => {
     it('should call itemService.create and return its result', async () => {
       const now = new Date();
       const dto = { name: 'New Item' };
-      const result = { id: 1, name: 'New Item', slug: 'new-item', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const result = { id: 1, name: 'New Item', slug: 'new-item', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       const spy = jest.spyOn(service, 'create').mockResolvedValue(result);
 
       await expect(controller.create(dto, mockReq)).resolves.toEqual(result);
@@ -45,7 +45,7 @@ describe('ItemsController', () => {
   describe('findAll', () => {
     it('should call itemService.findAll and return its result', async () => {
       const now = new Date();
-      const result = [{ id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now }];
+      const result = [{ id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now }];
       const spy = jest.spyOn(service, 'findAll').mockResolvedValue(result);
 
       await expect(controller.findAll(mockReq)).resolves.toEqual(result);
@@ -66,7 +66,7 @@ describe('ItemsController', () => {
   describe('findOne', () => {
     it('should call itemService.findOne and return its result', async () => {
       const now = new Date();
-      const result = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const result = { id: 1, name: 'Item 1', slug: 'item-1', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       const spy = jest.spyOn(service, 'findOne').mockResolvedValue(result);
 
       await expect(controller.findOne('item-1', mockReq)).resolves.toEqual(result);
@@ -83,7 +83,7 @@ describe('ItemsController', () => {
     it('should call itemService.update and return its result', async () => {
       const now = new Date();
       const dto = { id: '1', name: 'Updated Item' };
-      const result = { id: 1, name: 'Updated Item', slug: 'updated-item', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const result = { id: 1, name: 'Updated Item', slug: 'updated-item', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       const spy = jest.spyOn(service, 'update').mockResolvedValue(result);
 
       await expect(controller.update('item-1', dto, mockReq)).resolves.toEqual(result);
@@ -99,7 +99,7 @@ describe('ItemsController', () => {
   describe('remove', () => {
     it('should call itemService.remove and return its result', async () => {
       const now = new Date();
-      const result = { id: 1, name: 'Deleted Item', slug: 'deleted-item', bakeryId: BAKERY_ID, par: null, createdAt: now, updatedAt: now };
+      const result = { id: 1, name: 'Deleted Item', slug: 'deleted-item', bakeryId: BAKERY_ID, par: null, defaultBatchQty: null, createdAt: now, updatedAt: now };
       const spy = jest.spyOn(service, 'remove').mockResolvedValue(result);
 
       await expect(controller.remove('1', mockReq)).resolves.toEqual(result);
