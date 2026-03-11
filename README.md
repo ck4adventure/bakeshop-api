@@ -13,6 +13,12 @@
 
 ## API Routes
 
+### Bakery
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/bakery/settings` | JWT | Get bakery name and operating days (any role) |
+| PATCH | `/bakery/settings` | JWT + ADMIN | Update operating days. Body: `{ operatingDays: Weekday[] }` |
+
 ### Auth
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|

@@ -15,6 +15,7 @@ import { BatchesController } from './batches/batches.controller';
 import { InventoryModule } from './inventory/inventory.module';
 import { InventoryController } from './inventory/inventory.controller';
 import { ProductionScheduleModule } from './production_schedule/production_schedule.module';
+import { BakeryModule } from './bakery/bakery.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ProductionScheduleModule } from './production_schedule/production_sched
     BatchesModule,
     InventoryModule,
     ProductionScheduleModule,
+    BakeryModule,
   ],
   controllers: [AppController],
   providers: [

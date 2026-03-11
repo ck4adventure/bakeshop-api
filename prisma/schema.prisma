@@ -9,13 +9,14 @@ datasource db {
 
 // --------   Bakery   ----------
 model Bakery {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  users     User[]
-  items     Item[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String    @id @default(uuid())
+  name          String
+  slug          String    @unique
+  operatingDays Weekday[] // empty = not yet configured (treat as all days open)
+  users         User[]
+  items         Item[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // --------   Users   ----------
