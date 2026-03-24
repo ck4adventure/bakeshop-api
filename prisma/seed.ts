@@ -7,9 +7,9 @@ const SALT_ROUNDS = 10
 const demo_bakery = { name: "Demo Bakery", slug: "demo-bakery" }
 
 const users_demo_data = [
-	{ username: 'admin', email: 'admin@bakeshop.dev', password: 'admin123', role: Role.ADMIN },
-	{ username: 'manager', email: 'manager@bakeshop.dev', password: 'manager123', role: Role.MANAGER },
-	{ username: 'baker', email: 'baker@bakeshop.dev', password: 'baker123', role: Role.BAKER },
+	{ username: process.env.USER3_USERNAME ?? 'admin', password: process.env.USER3_PASSWORD ?? 'admin123', role: Role.ADMIN },
+	{ username: process.env.USER2_USERNAME ?? 'manager', password: process.env.USER2_PASSWORD ?? 'manager123', role: Role.MANAGER },
+	{ username: process.env.USER1_USERNAME ?? 'baker', password: process.env.USER1_PASSWORD ?? 'baker123', role: Role.BAKER },
 ]
 
 const items_demo_data = [
@@ -48,10 +48,11 @@ async function main() {
 	// seed users, linked to demo bakery
 	for (const u of users_demo_data) {
 		const passwordHash = await bcrypt.hash(u.password, SALT_ROUNDS)
+		const email = `${u.username}@bakeshop.dev`
 		await prisma.user.upsert({
 			where: { username: u.username },
-			update: { bakeryId: bakery.id },
-			create: { username: u.username, email: u.email, passwordHash, role: u.role, bakeryId: bakery.id },
+			update: { email, passwordHash, bakeryId: bakery.id },
+			create: { username: u.username, email, passwordHash, role: u.role, bakeryId: bakery.id },
 		})
 		console.log(`user seeded: ${u.username}`)
 	}
