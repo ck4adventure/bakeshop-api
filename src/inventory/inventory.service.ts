@@ -9,7 +9,7 @@ export class InventoryService {
   async findAll(bakeryId: string) {
     const items = await this.prisma.item.findMany({
       where: { bakeryId },
-      include: { inventory: true },
+      include: { inventory: true, category: true },
     });
 
     return items.map(item => ({
@@ -20,6 +20,7 @@ export class InventoryService {
         slug: item.slug,
         par: item.par,
         defaultBatchQty: item.defaultBatchQty,
+        category: item.category ? { id: item.category.id, name: item.category.name } : null,
       },
     }));
   }
