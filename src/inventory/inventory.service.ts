@@ -120,4 +120,21 @@ export class InventoryService {
 
     return transaction;
   }
+
+  async undoBake(transactionId: number, bakeryId: string) {
+    const transaction = await this.prisma.inventoryTransaction.findFirst({
+      where: { id: transactionId, reason: InventoryReason.BAKE, product: { bakeryId } },
+    });
+    if (!transaction) {
+      throw new NotFoundException('Bake transaction not found');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.itemInventory.update({
+        where: { itemId: transaction.itemId },
+        data: { quantity: { increment: Math.abs(transaction.quantity) } },
+      }),
+      this.prisma.inventoryTransaction.delete({ where: { id: transactionId } }),
+    ]);
+  }
 }

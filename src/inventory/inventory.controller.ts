@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Req } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -29,5 +29,10 @@ export class InventoryController {
     @Req() req: any,
   ) {
     return this.inventoryService.recordBake(body.itemId, body.quantity, body.note, req.user.bakeryId);
+  }
+
+  @Delete('bake/:id')
+  undoBake(@Param('id') id: string, @Req() req: any) {
+    return this.inventoryService.undoBake(Number(id), req.user.bakeryId);
   }
 }
