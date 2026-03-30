@@ -24,6 +24,22 @@ export class InventoryService {
     }));
   }
 
+  async findAdjustments(bakeryId: string) {
+    return this.prisma.inventoryTransaction.findMany({
+      where: {
+        reason: InventoryReason.ADJUSTMENT,
+        product: { bakeryId },
+      },
+      include: {
+        product: {
+          select: { name: true, slug: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+  }
+
   async recordAdjustment(itemId: number, quantity: number, note: string, bakeryId: string) {
     if (!Number.isInteger(itemId) || itemId <= 0) {
       throw new BadRequestException('Invalid itemId');

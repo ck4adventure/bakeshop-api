@@ -10,6 +10,11 @@ export class InventoryController {
     return this.inventoryService.findAll(req.user.bakeryId);
   }
 
+  @Get('adjustments')
+  findAdjustments(@Req() req: any) {
+    return this.inventoryService.findAdjustments(req.user.bakeryId);
+  }
+
   @Post('adjust')
   recordAdjustment(
     @Body() body: { itemId: number; quantity: number; note: string },
