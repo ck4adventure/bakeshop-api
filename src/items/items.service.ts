@@ -22,12 +22,14 @@ export class ItemsService {
 				bakeryId,
 				...(createItemDto.par !== undefined && { par: createItemDto.par }),
 				...(createItemDto.defaultBatchQty !== undefined && { defaultBatchQty: createItemDto.defaultBatchQty }),
+				...(createItemDto.categoryId !== undefined && { categoryId: createItemDto.categoryId }),
 			},
+			include: { category: true },
 		});
 	}
 
 	async findAll(bakeryId: string): Promise<Item[]> {
-		return this.prisma.item.findMany({ where: { bakeryId } });
+		return this.prisma.item.findMany({ where: { bakeryId }, include: { category: true } });
 	}
 
 	async findOne(slug: string, bakeryId: string): Promise<Item> {
@@ -53,7 +55,9 @@ export class ItemsService {
 				slug: slugify(updateItemDto.name ?? ''),
 				...(updateItemDto.par !== undefined && { par: updateItemDto.par }),
 				...(updateItemDto.defaultBatchQty !== undefined && { defaultBatchQty: updateItemDto.defaultBatchQty }),
+				...(updateItemDto.categoryId !== undefined && { categoryId: updateItemDto.categoryId }),
 			},
+			include: { category: true },
 		});
 	}
 

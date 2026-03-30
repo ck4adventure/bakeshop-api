@@ -14,4 +14,8 @@ export class CreateItemDto {
   @IsInt()
   @Min(1)
   defaultBatchQty?: number;
+
+  @IsOptional()
+  @IsInt()
+  categoryId?: number | null;
 }

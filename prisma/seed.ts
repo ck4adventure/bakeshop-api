@@ -12,11 +12,17 @@ const users_demo_data = [
 	{ username: process.env.USER1_USERNAME ?? 'baker', password: process.env.USER1_PASSWORD ?? 'baker123', role: Role.BAKER },
 ]
 
+const categories_demo_data = [
+	{ name: "Cookies" },
+	{ name: "Bars" },
+];
+
+// categoryName is used to look up the seeded category id after upsert
 const items_demo_data = [
-	{ name: "Chocolate Chip Cookies", slug: "chocolate-chip-cookies" },
-	{ name: "Brookies", slug: "brookies" },
-	{ name: "Snickerdoodles", slug: "snickerdoodles" },
-	{ name: "Oatmeal Raisin", slug: "oatmeal-raisin" },
+	{ name: "Chocolate Chip Cookies", slug: "chocolate-chip-cookies", categoryName: "Cookies" },
+	{ name: "Brookies", slug: "brookies", categoryName: "Bars" },
+	{ name: "Snickerdoodles", slug: "snickerdoodles", categoryName: "Cookies" },
+	{ name: "Oatmeal Raisin", slug: "oatmeal-raisin", categoryName: "Cookies" },
 ];
 
 // createMany
@@ -57,14 +63,27 @@ async function main() {
 		console.log(`user seeded: ${u.username}`)
 	}
 
+	// seed categories
+	const categoryMap: Record<string, number> = {};
+	for (const cat of categories_demo_data) {
+		const catResult = await prisma.category.upsert({
+			where: { name_bakeryId: { name: cat.name, bakeryId: bakery.id } },
+			update: {},
+			create: { name: cat.name, bakeryId: bakery.id },
+		});
+		categoryMap[cat.name] = catResult.id;
+		console.log(`category seeded: ${catResult.name}`);
+	}
+
 	// seed items
 	for (const item of items_demo_data) {
+		const categoryId = item.categoryName ? categoryMap[item.categoryName] : undefined;
 
 		// create item (skip if already exists), always link to bakery
 		const itemResult = await prisma.item.upsert({
 			where: { slug: item.slug },
-			update: { bakeryId: bakery.id },
-			create: { ...item, bakeryId: bakery.id },
+			update: { bakeryId: bakery.id, ...(categoryId && { categoryId }) },
+			create: { name: item.name, slug: item.slug, bakeryId: bakery.id, ...(categoryId && { categoryId }) },
 		});
 		console.log("item seeded: ", itemResult.slug);
 

@@ -15,6 +15,7 @@ model Bakery {
   operatingDays Weekday[]            // empty = not yet configured (treat as all days open)
   users         User[]
   items         Item[]
+  categories    Category[]
   overrides     DailyQuotaOverride[]
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
@@ -39,6 +40,17 @@ model User {
   updatedAt    DateTime @updatedAt
 }
 
+// --------   Categories   ----------
+model Category {
+  id       Int    @id @default(autoincrement())
+  name     String
+  bakery   Bakery @relation(fields: [bakeryId], references: [id])
+  bakeryId String
+  items    Item[]
+
+  @@unique([name, bakeryId])
+}
+
 // --------   Items   ----------
 model Item {
   id              Int                    @id @default(autoincrement())
@@ -48,12 +60,14 @@ model Item {
   defaultBatchQty Int?
   bakery          Bakery?                @relation(fields: [bakeryId], references: [id])
   overrides       DailyQuotaOverride[]
-  bakeryId     String?
-  inventory    ItemInventory?
-  schedules    ProductionSchedule[]
-  transactions InventoryTransaction[]
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
+  bakeryId        String?
+  category        Category?              @relation(fields: [categoryId], references: [id])
+  categoryId      Int?
+  inventory       ItemInventory?
+  schedules       ProductionSchedule[]
+  transactions    InventoryTransaction[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
 }
 
 model InventoryTransaction {

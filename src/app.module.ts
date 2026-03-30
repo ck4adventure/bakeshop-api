@@ -16,6 +16,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { InventoryController } from './inventory/inventory.controller';
 import { ProductionScheduleModule } from './production_schedule/production_schedule.module';
 import { BakeryModule } from './bakery/bakery.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { BakeryModule } from './bakery/bakery.module';
     InventoryModule,
     ProductionScheduleModule,
     BakeryModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [

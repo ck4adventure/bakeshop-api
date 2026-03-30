@@ -7,14 +7,21 @@ export class InventoryService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(bakeryId: string) {
-    return this.prisma.itemInventory.findMany({
-      where: { item: { bakeryId } },
-      include: {
-        item: {
-          select: { name: true, slug: true, par: true, defaultBatchQty: true },
-        },
-      },
+    const items = await this.prisma.item.findMany({
+      where: { bakeryId },
+      include: { inventory: true },
     });
+
+    return items.map(item => ({
+      itemId: item.id,
+      quantity: item.inventory?.quantity ?? 0,
+      item: {
+        name: item.name,
+        slug: item.slug,
+        par: item.par,
+        defaultBatchQty: item.defaultBatchQty,
+      },
+    }));
   }
 
   async recordAdjustment(itemId: number, quantity: number, note: string, bakeryId: string) {
