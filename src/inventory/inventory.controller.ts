@@ -23,6 +23,11 @@ export class InventoryController {
     return this.inventoryService.recordAdjustment(body.itemId, body.quantity, body.note, req.user.bakeryId);
   }
 
+  @Get('bakes/today')
+  findTodayBakes(@Req() req: any) {
+    return this.inventoryService.findTodayBakes(req.user.bakeryId);
+  }
+
   @Post('bake')
   recordBake(
     @Body() body: { itemId: number; quantity: number; note?: string },

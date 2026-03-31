@@ -11,23 +11,32 @@ const BAKERY_ID = 'bakery-uuid-1';
 describe('InventoryService', () => {
   let service: InventoryService;
   let prisma: {
-    item: { findFirst: jest.Mock };
-    itemInventory: { findMany: jest.Mock; findUnique: jest.Mock; upsert: jest.Mock; update: jest.Mock };
-    inventoryTransaction: { create: jest.Mock };
+    item: { findFirst: jest.Mock; findMany: jest.Mock };
+    itemInventory: { findUnique: jest.Mock };
+    inventoryTransaction: { create: jest.Mock; findMany: jest.Mock; findFirst: jest.Mock; delete: jest.Mock };
     $transaction: jest.Mock;
   };
 
   beforeEach(async () => {
     prisma = {
-      item: { findFirst: jest.fn() },
-      itemInventory: {
+      item: { findFirst: jest.fn(), findMany: jest.fn() },
+      itemInventory: { findUnique: jest.fn() },
+      inventoryTransaction: {
+        create: jest.fn(),
         findMany: jest.fn(),
-        findUnique: jest.fn(),
-        upsert: jest.fn(),
-        update: jest.fn(),
+        findFirst: jest.fn(),
+        delete: jest.fn(),
       },
-      inventoryTransaction: { create: jest.fn() },
-      $transaction: jest.fn().mockImplementation((ops: Promise<unknown>[]) => Promise.all(ops)),
+      // Handles both the array form ($transaction([op1, op2])) and the
+      // interactive/callback form ($transaction(async tx => { ... })).
+      $transaction: jest.fn().mockImplementation(
+        (opsOrFn: unknown[] | ((tx: unknown) => Promise<unknown>)) => {
+          if (typeof opsOrFn === 'function') {
+            return opsOrFn(prisma);
+          }
+          return Promise.all(opsOrFn as Promise<unknown>[]);
+        },
+      ),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -45,27 +54,48 @@ describe('InventoryService', () => {
   });
 
   describe('findAll', () => {
-    it('should return inventory scoped to the bakery', async () => {
-      const now = new Date();
-      const mockInventory = [{ itemId: 1, quantity: 10, updatedAt: now, item: { name: 'Item 1', slug: 'item-1', par: null, defaultBatchQty: null } }];
-      prisma.itemInventory.findMany.mockResolvedValue(mockInventory);
+    it('should return inventory scoped to the bakery, mapping item.inventory.quantity', async () => {
+      prisma.item.findMany.mockResolvedValue([
+        {
+          id: 1,
+          name: 'Item 1',
+          slug: 'item-1',
+          par: null,
+          defaultBatchQty: null,
+          bakeryId: BAKERY_ID,
+          inventory: { itemId: 1, quantity: 10 },
+          category: null,
+        },
+      ]);
 
       const result = await service.findAll(BAKERY_ID);
-      expect(result).toEqual(mockInventory);
-      expect(prisma.itemInventory.findMany).toHaveBeenCalledWith({
-        where: { item: { bakeryId: BAKERY_ID } },
-        include: { item: { select: { name: true, slug: true, par: true, defaultBatchQty: true } } },
+
+      expect(prisma.item.findMany).toHaveBeenCalledWith({
+        where: { bakeryId: BAKERY_ID },
+        include: { inventory: true, category: true },
       });
+      expect(result).toEqual([
+        { itemId: 1, quantity: 10, item: { name: 'Item 1', slug: 'item-1', par: null, defaultBatchQty: null, category: null } },
+      ]);
     });
 
-    it('should return empty array if no inventory found', async () => {
-      prisma.itemInventory.findMany.mockResolvedValue([]);
+    it('returns quantity 0 when an item has no inventory record yet', async () => {
+      prisma.item.findMany.mockResolvedValue([
+        { id: 2, name: 'New Item', slug: 'new-item', par: null, defaultBatchQty: null, bakeryId: BAKERY_ID, inventory: null, category: null },
+      ]);
+
+      const result = await service.findAll(BAKERY_ID);
+      expect(result[0].quantity).toBe(0);
+    });
+
+    it('should return empty array if bakery has no items', async () => {
+      prisma.item.findMany.mockResolvedValue([]);
       const result = await service.findAll(BAKERY_ID);
       expect(result).toEqual([]);
     });
 
-    it('should throw an error if prisma fails', async () => {
-      prisma.itemInventory.findMany.mockRejectedValue(new Error('Database error'));
+    it('should propagate errors from prisma', async () => {
+      prisma.item.findMany.mockRejectedValue(new Error('Database error'));
       await expect(service.findAll(BAKERY_ID)).rejects.toThrow('Database error');
     });
   });
@@ -92,30 +122,41 @@ describe('InventoryService', () => {
       expect(prisma.item.findFirst).toHaveBeenCalledWith({ where: { id: 1, bakeryId: BAKERY_ID } });
     });
 
-    it('should throw BadRequestException if adjustment would put stock below zero', async () => {
+    it('should throw BadRequestException when negative delta would put stock below zero', async () => {
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 3 });
+
       await expect(service.recordAdjustment(1, -5, 'Recount', BAKERY_ID)).rejects.toThrow(BadRequestException);
+      expect(prisma.itemInventory.findUnique).toHaveBeenCalledWith({ where: { itemId: 1 } });
     });
 
-    it('should upsert inventory and create a transaction atomically', async () => {
+    it('should create a transaction for a negative delta when stock is sufficient', async () => {
       const now = new Date();
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 10 });
+      const transactionResult = { id: 1, itemId: 1, quantity: -5, reason: InventoryReason.ADJUSTMENT, note: 'Recount', createdAt: now };
+      prisma.inventoryTransaction.create.mockResolvedValue(transactionResult);
 
-      const inventoryResult = { itemId: 1, quantity: 15, updatedAt: now };
+      const result = await service.recordAdjustment(1, -5, 'Recount', BAKERY_ID);
+
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.inventoryTransaction.create).toHaveBeenCalledWith({
+        data: { itemId: 1, quantity: -5, reason: InventoryReason.ADJUSTMENT, note: 'Recount' },
+      });
+      expect(result).toEqual(transactionResult);
+    });
+
+    it('should create a transaction for a positive delta without a pre-check read', async () => {
+      const now = new Date();
+      prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       const transactionResult = { id: 1, itemId: 1, quantity: 5, reason: InventoryReason.ADJUSTMENT, note: 'Recount', createdAt: now };
-      prisma.itemInventory.upsert.mockResolvedValue(inventoryResult);
       prisma.inventoryTransaction.create.mockResolvedValue(transactionResult);
 
       const result = await service.recordAdjustment(1, 5, 'Recount', BAKERY_ID);
 
       expect(prisma.$transaction).toHaveBeenCalled();
-      expect(prisma.itemInventory.upsert).toHaveBeenCalledWith({
-        where: { itemId: 1 },
-        update: { quantity: { increment: 5 } },
-        create: { itemId: 1, quantity: 5 },
-      });
+      // No pre-check needed for positive delta — trigger handles the upsert
+      expect(prisma.itemInventory.findUnique).not.toHaveBeenCalled();
       expect(prisma.inventoryTransaction.create).toHaveBeenCalledWith({
         data: { itemId: 1, quantity: 5, reason: InventoryReason.ADJUSTMENT, note: 'Recount' },
       });
@@ -124,7 +165,6 @@ describe('InventoryService', () => {
 
     it('should propagate errors from prisma', async () => {
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
-      prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 10 });
       prisma.$transaction.mockRejectedValue(new Error('DB error'));
       await expect(service.recordAdjustment(1, 5, 'Recount', BAKERY_ID)).rejects.toThrow('DB error');
     });
@@ -146,29 +186,24 @@ describe('InventoryService', () => {
       await expect(service.recordBake(1, 5, undefined, BAKERY_ID)).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw BadRequestException if bake quantity exceeds stock', async () => {
+    it('should throw BadRequestException when bake quantity exceeds current stock', async () => {
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 3 });
+
       await expect(service.recordBake(1, 5, undefined, BAKERY_ID)).rejects.toThrow(BadRequestException);
+      expect(prisma.itemInventory.findUnique).toHaveBeenCalledWith({ where: { itemId: 1 } });
     });
 
-    it('should decrement inventory and create a transaction atomically', async () => {
+    it('should create a transaction with negative quantity when stock is sufficient', async () => {
       const now = new Date();
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 10 });
-
-      const inventoryResult = { itemId: 1, quantity: 5, updatedAt: now };
       const transactionResult = { id: 1, itemId: 1, quantity: -5, reason: InventoryReason.BAKE, note: null, createdAt: now };
-      prisma.itemInventory.update.mockResolvedValue(inventoryResult);
       prisma.inventoryTransaction.create.mockResolvedValue(transactionResult);
 
       const result = await service.recordBake(1, 5, undefined, BAKERY_ID);
 
       expect(prisma.$transaction).toHaveBeenCalled();
-      expect(prisma.itemInventory.update).toHaveBeenCalledWith({
-        where: { itemId: 1 },
-        data: { quantity: { decrement: 5 } },
-      });
       expect(prisma.inventoryTransaction.create).toHaveBeenCalledWith({
         data: { itemId: 1, quantity: -5, reason: InventoryReason.BAKE },
       });
@@ -179,7 +214,6 @@ describe('InventoryService', () => {
       const now = new Date();
       prisma.item.findFirst.mockResolvedValue({ id: 1, bakeryId: BAKERY_ID });
       prisma.itemInventory.findUnique.mockResolvedValue({ itemId: 1, quantity: 10 });
-      prisma.itemInventory.update.mockResolvedValue({ itemId: 1, quantity: 5, updatedAt: now });
       prisma.inventoryTransaction.create.mockResolvedValue({
         id: 1, itemId: 1, quantity: -5, reason: InventoryReason.BAKE, note: 'Morning bake', createdAt: now,
       });
@@ -189,6 +223,22 @@ describe('InventoryService', () => {
       expect(prisma.inventoryTransaction.create).toHaveBeenCalledWith({
         data: { itemId: 1, quantity: -5, reason: InventoryReason.BAKE, note: 'Morning bake' },
       });
+    });
+  });
+
+  describe('undoBake', () => {
+    it('should throw NotFoundException if bake transaction does not exist', async () => {
+      prisma.inventoryTransaction.findFirst.mockResolvedValue(null);
+      await expect(service.undoBake(99, BAKERY_ID)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should delete the transaction (trigger reverses the inventory delta)', async () => {
+      prisma.inventoryTransaction.findFirst.mockResolvedValue({ id: 1, itemId: 1, quantity: -5 });
+      prisma.inventoryTransaction.delete.mockResolvedValue({});
+
+      await service.undoBake(1, BAKERY_ID);
+
+      expect(prisma.inventoryTransaction.delete).toHaveBeenCalledWith({ where: { id: 1 } });
     });
   });
 });

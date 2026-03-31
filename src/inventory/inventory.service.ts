@@ -55,31 +55,30 @@ export class InventoryService {
     const item = await this.prisma.item.findFirst({ where: { id: itemId, bakeryId } });
     if (!item) throw new NotFoundException(`Item with id ${itemId} not found`);
 
-    const inventory = await this.prisma.itemInventory.findUnique({ where: { itemId } });
-    const currentQty = inventory?.quantity ?? 0;
-    if (currentQty + quantity < 0) {
-      throw new BadRequestException(
-        `Adjustment would put stock at ${currentQty + quantity}. Current stock is ${currentQty}.`,
-      );
-    }
+    return this.prisma.$transaction(async (tx) => {
+      if (quantity < 0) {
+        // Pre-check for a user-friendly error message; the trigger enforces this
+        // atomically as the true guard against concurrent writes.
+        const inv = await tx.itemInventory.findUnique({ where: { itemId } });
+        const currentQty = inv?.quantity ?? 0;
+        if (currentQty + quantity < 0) {
+          throw new BadRequestException(
+            `Adjustment would put stock at ${currentQty + quantity}. Current stock is ${currentQty}.`,
+          );
+        }
+      }
 
-    const [, transaction] = await this.prisma.$transaction([
-      this.prisma.itemInventory.upsert({
-        where: { itemId },
-        update: { quantity: { increment: quantity } },
-        create: { itemId, quantity: Math.max(0, quantity) },
-      }),
-      this.prisma.inventoryTransaction.create({
+      // Inserting the transaction is the only write needed — the trigger projects
+      // the delta onto ItemInventory.
+      return tx.inventoryTransaction.create({
         data: {
           itemId,
           quantity,
           reason: InventoryReason.ADJUSTMENT,
           note: note.trim(),
         },
-      }),
-    ]);
-
-    return transaction;
+      });
+    });
   }
 
   async recordBake(itemId: number, quantity: number, note: string | undefined, bakeryId: string) {
@@ -95,30 +94,43 @@ export class InventoryService {
       throw new NotFoundException(`Item with id ${itemId} not found`);
     }
 
-    const inventory = await this.prisma.itemInventory.findUnique({ where: { itemId } });
-    const currentQty = inventory?.quantity ?? 0;
-    if (quantity > currentQty) {
-      throw new BadRequestException(
-        `Cannot bake ${quantity} — only ${currentQty} in stock. Use an adjustment if counts are off.`,
-      );
-    }
+    return this.prisma.$transaction(async (tx) => {
+      // Pre-check for a user-friendly error message; the trigger enforces this
+      // atomically as the true guard against concurrent writes.
+      const inv = await tx.itemInventory.findUnique({ where: { itemId } });
+      const currentQty = inv?.quantity ?? 0;
+      if (currentQty < quantity) {
+        throw new BadRequestException(
+          `Cannot bake ${quantity} — only ${currentQty} in stock. Use an adjustment if counts are off.`,
+        );
+      }
 
-    const [, transaction] = await this.prisma.$transaction([
-      this.prisma.itemInventory.update({
-        where: { itemId },
-        data: { quantity: { decrement: quantity } },
-      }),
-      this.prisma.inventoryTransaction.create({
+      // Inserting the transaction is the only write needed — the trigger projects
+      // the delta onto ItemInventory.
+      return tx.inventoryTransaction.create({
         data: {
           itemId,
           quantity: -quantity,
           reason: InventoryReason.BAKE,
           ...(note?.trim() && { note: note.trim() }),
         },
-      }),
-    ]);
+      });
+    });
+  }
 
-    return transaction;
+  async findTodayBakes(bakeryId: string) {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return this.prisma.inventoryTransaction.findMany({
+      where: {
+        reason: InventoryReason.BAKE,
+        product: { bakeryId },
+        createdAt: { gte: startOfDay, lte: endOfDay },
+      },
+    });
   }
 
   async undoBake(transactionId: number, bakeryId: string) {
@@ -129,12 +141,8 @@ export class InventoryService {
       throw new NotFoundException('Bake transaction not found');
     }
 
-    await this.prisma.$transaction([
-      this.prisma.itemInventory.update({
-        where: { itemId: transaction.itemId },
-        data: { quantity: { increment: Math.abs(transaction.quantity) } },
-      }),
-      this.prisma.inventoryTransaction.delete({ where: { id: transactionId } }),
-    ]);
+    // Deleting the transaction fires the trigger's DELETE handler, which
+    // reverses the inventory delta without a separate explicit write.
+    await this.prisma.inventoryTransaction.delete({ where: { id: transactionId } });
   }
 }

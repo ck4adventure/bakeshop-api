@@ -87,16 +87,13 @@ async function main() {
 		});
 		console.log("item seeded: ", itemResult.slug);
 
-		// create batch for item to give it a quantity
+		// create batch for item to give it a starting quantity
+		// (the trigger on InventoryTransaction projects the delta onto ItemInventory)
 		const qty = itemResult.id * 10;
-		const batchResult = await prisma.inventoryTransaction.create({
-			data: {
-				itemId: itemResult.id,
-				quantity: qty,
-				reason: InventoryReason.BATCH
-			}
+		await prisma.inventoryTransaction.create({
+			data: { itemId: itemResult.id, quantity: qty, reason: InventoryReason.BATCH }
 		});
-		console.log("batch created: ", batchResult);
+		console.log(`batch seeded for: ${itemResult.slug} (qty: ${qty})`);
 
 		// give item a production schedule
 		// itemId, weekday 0-6, quantity
