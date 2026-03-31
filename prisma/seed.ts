@@ -4,7 +4,19 @@ const prisma = new PrismaClient()
 
 const SALT_ROUNDS = 10
 
-const demo_bakery = { name: "Demo Bakery", slug: "demo-bakery" }
+const demo_bakery = {
+	name: "Demo Bakery",
+	slug: "demo-bakery",
+	operatingDays: [
+		Weekday.Sunday,
+		Weekday.Monday,
+		Weekday.Tuesday,
+		Weekday.Wednesday,
+		Weekday.Thursday,
+		Weekday.Friday,
+		Weekday.Saturday,
+	],
+}
 
 const users_demo_data = [
 	{ username: process.env.USER3_USERNAME ?? 'admin', password: process.env.USER3_PASSWORD ?? 'admin123', role: Role.ADMIN },
@@ -46,7 +58,7 @@ async function main() {
 	// seed demo bakery
 	const bakery = await prisma.bakery.upsert({
 		where: { slug: demo_bakery.slug },
-		update: {},
+		update: { operatingDays: demo_bakery.operatingDays },
 		create: demo_bakery,
 	})
 	console.log(`bakery seeded: ${bakery.slug}`)
