@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Weekday } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductionScheduleDto } from './dto/create-production_schedule.dto';
@@ -62,7 +62,15 @@ export class ProductionScheduleService {
     });
   }
 
+  private rejectIfTodayOrPast(date: string) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (date <= todayStr) {
+      throw new BadRequestException('Overrides cannot be set for today or past dates');
+    }
+  }
+
   async upsertOverride(itemId: number, date: string, quantity: number, bakeryId: string) {
+    this.rejectIfTodayOrPast(date);
     const item = await this.prisma.item.findFirst({ where: { id: itemId, bakeryId } });
     if (!item) throw new NotFoundException(`Item ${itemId} not found`);
 
@@ -74,6 +82,7 @@ export class ProductionScheduleService {
   }
 
   async removeOverride(itemId: number, date: string, bakeryId: string) {
+    this.rejectIfTodayOrPast(date);
     const existing = await this.prisma.dailyQuotaOverride.findFirst({
       where: { itemId, date: new Date(date), bakeryId },
     });
