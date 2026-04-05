@@ -69,15 +69,15 @@ export class ProductionScheduleService {
     }
   }
 
-  async upsertOverride(itemId: number, date: string, quantity: number, bakeryId: string) {
+  async upsertOverride(itemId: number, date: string, quantity: number, bakeryId: string, specialOrderQty = 0) {
     this.rejectIfTodayOrPast(date);
     const item = await this.prisma.item.findFirst({ where: { id: itemId, bakeryId } });
     if (!item) throw new NotFoundException(`Item ${itemId} not found`);
 
     return this.prisma.dailyQuotaOverride.upsert({
       where: { itemId_date: { itemId, date: new Date(date) } },
-      create: { itemId, bakeryId, date: new Date(date), quantity },
-      update: { quantity },
+      create: { itemId, bakeryId, date: new Date(date), quantity, specialOrderQty },
+      update: { quantity, specialOrderQty },
     });
   }
 

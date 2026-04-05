@@ -65,11 +65,11 @@ export class ProductionScheduleController {
   // POST /production-schedule/overrides — upsert override for a specific date
   @Post('overrides')
   upsertOverride(
-    @Body() body: { itemId: number; date: string; quantity: number },
+    @Body() body: { itemId: number; date: string; quantity: number; specialOrderQty?: number },
     @Req() req: any,
   ) {
     return this.productionScheduleService.upsertOverride(
-      body.itemId, body.date, body.quantity, req.user.bakeryId,
+      body.itemId, body.date, body.quantity, req.user.bakeryId, body.specialOrderQty ?? 0,
     );
   }
 
