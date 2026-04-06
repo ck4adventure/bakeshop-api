@@ -33,7 +33,7 @@ const categories_demo_data = [
 
 // categoryName is used to look up the seeded category id after upsert
 const items_demo_data = [
-	{ name: "Sticky Bun", slug: "ginger-scone", categoryName: "Sweet Pastry" },
+	{ name: "Sticky Bun", slug: "sticky-bun", categoryName: "Sweet Pastry" },
 	{ name: "Ginger Scone", slug: "ginger-scone", categoryName: "Sweet Pastry" },
 	{ name: "Berry Muffin", slug: "berry-muffin", categoryName: "Sweet Pastry" },
 	{ name: "Cardamom Donut Muffin", slug: "cardamom-donut-muffin", categoryName: "Sweet Pastry" },

@@ -14,26 +14,25 @@ async function bootstrap() {
   app.use(helmet());
 
   app.use(cookieParser());
-  // TODO set CORS to only trusted origins in prod
   app.enableCors({
-    origin: ['http://localhost:5173'], // Replace with your frontend's URL and port
-    credentials: true, // If you need cookies or auth headers
+    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173'],
+    credentials: true,
   });
 
-  // TODO swagger api only avail locally
-  // swagger setup
-  const config = new DocumentBuilder()
-    .setTitle('Bakeoff API')
-    .setDescription('CRUD style API backend for the bakeoff inventory app')
-    .setVersion('0.1')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Bakeoff API')
+      .setDescription('CRUD style API backend for the bakeoff inventory app')
+      .setVersion('0.1')
+      .build();
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, documentFactory);
+  }
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // for express platform http adapter
-  app.set('trust proxy', 'loopback'); // Trust requests from the loopback address
+  app.set('trust proxy', 1);
 
   await app.listen(process.env.PORT ?? 3000);
 }
