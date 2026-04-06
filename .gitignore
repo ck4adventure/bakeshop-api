@@ -2,6 +2,12 @@
 /dist
 /node_modules
 /build
+jest.config.js
+jest.config.d.ts
+jest.config.js.map
+prisma/seed.js
+prisma/seed.d.ts
+prisma/seed.js.map
 
 # Logs
 logs
