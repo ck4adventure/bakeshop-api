@@ -7,7 +7,7 @@ function slugify(name: string): string {
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Item } from '@prisma/client';
+import { Item, InventoryReason } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class ItemsService {
 	constructor(private prisma: PrismaService) { }
 
 	async create(createItemDto: CreateItemDto, bakeryId: string): Promise<Item> {
-		return this.prisma.item.create({
+		const item = await this.prisma.item.create({
 			data: {
 				name: createItemDto.name,
 				slug: slugify(createItemDto.name),
@@ -26,6 +26,19 @@ export class ItemsService {
 			},
 			include: { category: true },
 		});
+
+		if (createItemDto.initialQty && createItemDto.initialQty > 0) {
+			await this.prisma.inventoryTransaction.create({
+				data: {
+					itemId: item.id,
+					quantity: createItemDto.initialQty,
+					reason: InventoryReason.ADJUSTMENT,
+					note: 'Initial stock',
+				},
+			});
+		}
+
+		return item;
 	}
 
 	async findAll(bakeryId: string): Promise<Item[]> {

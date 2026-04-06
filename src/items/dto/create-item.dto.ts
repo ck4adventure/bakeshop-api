@@ -18,4 +18,9 @@ export class CreateItemDto {
   @IsOptional()
   @IsInt()
   categoryId?: number | null;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  initialQty?: number;
 }
