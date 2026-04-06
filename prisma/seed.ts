@@ -27,14 +27,34 @@ const users_demo_data = [
 const categories_demo_data = [
 	{ name: "Cookies" },
 	{ name: "Bars" },
+	{name: "Sweet Pastry"},
+	{name: "Savory Pastry"},
 ];
 
 // categoryName is used to look up the seeded category id after upsert
 const items_demo_data = [
-	{ name: "Chocolate Chip Cookies", slug: "chocolate-chip-cookies", categoryName: "Cookies" },
-	{ name: "Brookies", slug: "brookies", categoryName: "Bars" },
-	{ name: "Snickerdoodles", slug: "snickerdoodles", categoryName: "Cookies" },
+	{ name: "Sticky Bun", slug: "ginger-scone", categoryName: "Sweet Pastry" },
+	{ name: "Ginger Scone", slug: "ginger-scone", categoryName: "Sweet Pastry" },
+	{ name: "Berry Muffin", slug: "berry-muffin", categoryName: "Sweet Pastry" },
+	{ name: "Cardamom Donut Muffin", slug: "cardamom-donut-muffin", categoryName: "Sweet Pastry" },
+	{ name: "Apple Turnover", slug: "apple-turnover", categoryName: "Sweet Pastry" },
+	{ name: "Berry Danish", slug: "berry-danish", categoryName: "Sweet Pastry" },
+	{ name: "Ham Turnover", slug: "ham-turnover", categoryName: "Savory Pastry" },
+	{ name: "Cheddar Scallion Scone", slug: "cheddar-scallion-scone", categoryName: "Savory Pastry" },
+	{ name: "Spanakopita Galette", slug: "spanakopita-galette", categoryName: "Savory Pastry" },
+	{ name: "Herbed Gougere", slug: "herbed-gougere", categoryName: "Savory Pastry" },
+	{ name: "Ham Quiche", slug: "ham-quiche", categoryName: "Savory Pastry" },
+	{ name: "Roasted Vegetable Quiche", slug: "roasted-vegetable-quiche", categoryName: "Savory Pastry" },
+	{ name: "Focaccia", slug: "focaccia", categoryName: "Savory Pastry" },
+	{ name: "Sandwich of the Day", slug: "sandwich", categoryName: "Savory Pastry" },
+	{ name: "Chocolate Chip Cookie", slug: "chocolate-chip-cookie", categoryName: "Cookies" },
+	{ name: "Lemon Snap", slug: "lemon-snap", categoryName: "Cookies" },
 	{ name: "Oatmeal Raisin", slug: "oatmeal-raisin", categoryName: "Cookies" },
+	{ name: "Tahini Jam", slug: "tahini-jam", categoryName: "Cookies" },
+	{ name: "Tahini Chocolate Chip", slug: "tahini-chocolate-chip", categoryName: "Cookies" },
+	{ name: "Coconut Macaroon", slug: "coconut-macaroon", categoryName: "Cookies" },
+	{ name: "Lemon Bars", slug: "lemon-bars", categoryName: "Bars" },
+
 ];
 
 // createMany
@@ -101,11 +121,11 @@ async function main() {
 
 		// create batch for item to give it a starting quantity
 		// (the trigger on InventoryTransaction projects the delta onto ItemInventory)
-		const qty = itemResult.id * 10;
-		await prisma.inventoryTransaction.create({
-			data: { itemId: itemResult.id, quantity: qty, reason: InventoryReason.BATCH }
-		});
-		console.log(`batch seeded for: ${itemResult.slug} (qty: ${qty})`);
+		// const qty = itemResult.id * 10;
+		// await prisma.inventoryTransaction.create({
+		// 	data: { itemId: itemResult.id, quantity: qty, reason: InventoryReason.BATCH }
+		// });
+		// console.log(`batch seeded for: ${itemResult.slug} (qty: ${qty})`);
 
 		// give item a production schedule
 		// itemId, weekday 0-6, quantity
@@ -116,46 +136,46 @@ async function main() {
 		// 		weekday: Weekday.Sunday
 		// 	}
 		// })
-		const schedResult = await prisma.productionSchedule.createMany({ skipDuplicates: true,
-			data: [
-				{
-					itemId: itemResult.id,
-					quantity: 0,
-					weekday: Weekday.Monday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 0,
-					weekday: Weekday.Tuesday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 10,
-					weekday: Weekday.Wednesday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 10,
-					weekday: Weekday.Thursday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 15,
-					weekday: Weekday.Friday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 15,
-					weekday: Weekday.Saturday
-				},
-				{
-					itemId: itemResult.id,
-					quantity: 10,
-					weekday: Weekday.Sunday
-				}
-			]
-		})
-		console.log("production schedule results: ", schedResult)
+		// const schedResult = await prisma.productionSchedule.createMany({ skipDuplicates: true,
+		// 	data: [
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 0,
+		// 			weekday: Weekday.Monday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 0,
+		// 			weekday: Weekday.Tuesday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 10,
+		// 			weekday: Weekday.Wednesday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 10,
+		// 			weekday: Weekday.Thursday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 15,
+		// 			weekday: Weekday.Friday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 15,
+		// 			weekday: Weekday.Saturday
+		// 		},
+		// 		{
+		// 			itemId: itemResult.id,
+		// 			quantity: 10,
+		// 			weekday: Weekday.Sunday
+		// 		}
+		// 	]
+		// })
+		// console.log("production schedule results: ", schedResult)
 
 	}
 }
