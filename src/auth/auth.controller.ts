@@ -7,10 +7,10 @@ import {
   HttpCode,
   HttpStatus,
   Req,
-  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from './metadata';
+import { LoginDto } from './dto/login.dto';
 import { Request, Response } from 'express';
 
 @Controller('auth')
@@ -21,13 +21,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(
-    @Body() body: { username: string; password: string },
+    @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!body || !body.username || !body.password) {
-      throw new BadRequestException('Username and password are required');
-    }
-
     const { access_token } = await this.authService.signIn(
       body.username,
       body.password,

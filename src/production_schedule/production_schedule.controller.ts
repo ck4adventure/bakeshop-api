@@ -15,6 +15,7 @@ import { Weekday } from '@prisma/client';
 import { ProductionScheduleService } from './production_schedule.service';
 import { CreateProductionScheduleDto } from './dto/create-production_schedule.dto';
 import { UpdateProductionScheduleDto } from './dto/update-production_schedule.dto';
+import { UpsertOverrideDto } from './dto/upsert-override.dto';
 
 @Controller('production-schedule')
 export class ProductionScheduleController {
@@ -65,7 +66,7 @@ export class ProductionScheduleController {
   // POST /production-schedule/overrides — upsert override for a specific date
   @Post('overrides')
   upsertOverride(
-    @Body() body: { itemId: number; date: string; quantity: number; specialOrderQty?: number },
+    @Body() body: UpsertOverrideDto,
     @Req() req: any,
   ) {
     return this.productionScheduleService.upsertOverride(

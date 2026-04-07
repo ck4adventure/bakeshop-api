@@ -1,5 +1,7 @@
 import { Controller, Get, Post, Delete, Body, Param, Req } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
+import { RecordAdjustmentDto } from './dto/record-adjustment.dto';
+import { RecordBakeDto } from './dto/record-bake.dto';
 
 @Controller('inventory')
 export class InventoryController {
@@ -17,7 +19,7 @@ export class InventoryController {
 
   @Post('adjust')
   recordAdjustment(
-    @Body() body: { itemId: number; quantity: number; note: string },
+    @Body() body: RecordAdjustmentDto,
     @Req() req: any,
   ) {
     return this.inventoryService.recordAdjustment(body.itemId, body.quantity, body.note, req.user.bakeryId);
@@ -30,7 +32,7 @@ export class InventoryController {
 
   @Post('bake')
   recordBake(
-    @Body() body: { itemId: number; quantity: number; note?: string },
+    @Body() body: RecordBakeDto,
     @Req() req: any,
   ) {
     return this.inventoryService.recordBake(body.itemId, body.quantity, body.note, req.user.bakeryId);

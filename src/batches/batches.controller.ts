@@ -1,6 +1,7 @@
 // batches.controller.ts
 import { Controller, Get, Post, Body, Req } from '@nestjs/common';
 import { BatchesService } from './batches.service';
+import { CreateBatchDto } from './dto/create-batch.dto';
 
 @Controller('batches')
 export class BatchesController {
@@ -12,7 +13,7 @@ export class BatchesController {
   }
 
   @Post()
-  async createBatch(@Body() body: { itemId: number; quantity: number }, @Req() req: any) {
+  async createBatch(@Body() body: CreateBatchDto, @Req() req: any) {
     return this.batchesService.createBatch(body, req.user.bakeryId);
   }
 }
