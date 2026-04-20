@@ -4,12 +4,12 @@ import { Weekday } from '@prisma/client';
 export class CreateProductionScheduleDto {
   @IsInt()
   @Min(1)
-  itemId: number;
+  itemId!: number;
 
   @IsEnum(Weekday)
-  weekday: Weekday;
+  weekday!: Weekday;
 
   @IsInt()
   @Min(0)
-  quantity: number;
+  quantity!: number;
 }
